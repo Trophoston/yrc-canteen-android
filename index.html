@@ -5,14 +5,21 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>YRC Canteen Widget</title>
 		<style>
+			@font-face {
+				font-family: 'LINESeedSansTH';
+				src: url('assets/font/LINESeedSansTH_A_Rg.ttf') format('truetype');
+				font-display: swap;
+			}
+
 			:root {
-				--bg: #f5f4f0;
+				--bg: #f4f2ee;
 				--card: #ffffff;
-				--accent: #1f2937;
-				--primary: #2563eb;
-				--muted: #6b7280;
+				--accent: #1f1f1f;
+				--primary: #1f1f1f;
+				--muted: #6b6b6b;
 				--radius: 18px;
-				--shadow: 0 24px 60px rgba(30, 41, 59, 0.12);
+				--shadow: 0 24px 60px rgba(17, 24, 39, 0.12);
+				--highlight: #f7f3e8;
 			}
 
 			* {
@@ -21,7 +28,7 @@
 
 			body {
 				margin: 0;
-				font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+				font-family: 'LINESeedSansTH', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 				background: var(--bg);
 				color: var(--accent);
 			}
@@ -64,7 +71,7 @@
 			.cta-primary {
 				background: var(--primary);
 				color: #ffffff;
-				box-shadow: 0 20px 40px rgba(37, 99, 235, 0.25);
+				box-shadow: 0 20px 40px rgba(17, 24, 39, 0.22);
 			}
 
 			.cta-secondary {
@@ -107,7 +114,7 @@
 				padding: 24px;
 				border-radius: 16px;
 				border: 1px solid rgba(31, 41, 55, 0.08);
-				background: linear-gradient(155deg, rgba(37, 99, 235, 0.09), rgba(37, 99, 235, 0.02));
+				background: linear-gradient(155deg, rgba(31, 31, 31, 0.06), rgba(31, 31, 31, 0.01));
 			}
 
 			.feature-card h3 {
@@ -118,6 +125,48 @@
 			.feature-card p {
 				margin: 0;
 				color: var(--muted);
+				line-height: 1.6;
+			}
+
+			.tutorial-grid {
+				display: grid;
+				gap: 24px;
+				grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+				margin-top: 32px;
+			}
+
+			.tutorial-card {
+				padding: 28px;
+				border-radius: 18px;
+				background: var(--card);
+				border: 1px solid rgba(31, 31, 31, 0.08);
+				box-shadow: 0 18px 36px rgba(17, 24, 39, 0.08);
+				display: grid;
+				gap: 18px;
+			}
+
+			.tutorial-card h3 {
+				margin: 0;
+				font-size: clamp(1.2rem, 2.4vw, 1.35rem);
+				color: var(--accent);
+			}
+
+			.tutorial-card ol {
+				margin: 0;
+				padding-left: 20px;
+				display: grid;
+				gap: 12px;
+				color: var(--muted);
+				line-height: 1.6;
+			}
+
+			.tutorial-note {
+				margin-top: 24px;
+				padding: 18px 24px;
+				background: var(--highlight);
+				border-radius: 16px;
+				border: 1px solid rgba(31, 31, 31, 0.08);
+				color: var(--accent);
 				line-height: 1.6;
 			}
 
@@ -145,7 +194,7 @@
 				display: grid;
 				place-items: center;
 				border-radius: 12px;
-				background: rgba(37, 99, 235, 0.12);
+				background: rgba(31, 31, 31, 0.1);
 				color: var(--primary);
 				font-weight: 700;
 				font-size: 1.1rem;
@@ -172,8 +221,8 @@
 			.preview-card {
 				border-radius: 24px;
 				padding: 40px;
-				background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), rgba(255, 255, 255, 0.92));
-				border: 1px solid rgba(37, 99, 235, 0.15);
+				background: radial-gradient(circle at top left, rgba(31, 31, 31, 0.12), rgba(255, 255, 255, 0.95));
+				border: 1px solid rgba(31, 31, 31, 0.12);
 				text-align: center;
 			}
 
@@ -215,85 +264,124 @@
 					grid-template-columns: auto;
 					text-align: left;
 				}
+
+				.tutorial-card {
+					padding: 24px;
+				}
 			}
 		</style>
 	</head>
 	<body>
 		<header>
-			<h1>YRC Canteen Widget</h1>
+			<h1>วิดเจ็ตโรงอาหาร YRC</h1>
 			<p>
-				Keep your Yupparaj Rajabhat Canteen balance at a glance. Our Android widget securely logs in,
-				refreshes your wallet, and surfaces the latest owner details right on your home screen.
+				ตรวจสอบยอดคงเหลือและชื่อเจ้าของบัญชีโรงอาหาร YRC ได้ทันทีจากหน้าจอหลัก วิดเจ็ตที่พัฒนาด้วย
+				Expo และ React Native ตัวนี้ล็อกอินอย่างปลอดภัย อัปเดตข้อมูลสดใหม่ และพร้อมใช้งานกับธีมของคุณ
+				เสมอ
 			</p>
 			<div class="cta-buttons">
-				<a class="cta-primary" href="https://apps.apple.com" target="_blank" rel="noreferrer">
-					Download Android Build
-				</a>
+				<a
+					class="cta-primary"
+					href="download_file/YRC_Canteen_installer_V_ii.apk"
+					download
+				>ดาวน์โหลดไฟล์ติดตั้ง Android</a>
 				<a class="cta-secondary" href="https://www.instagram.com/trophoston/" target="_blank" rel="noreferrer">
-					Talk to the Creator
+					พูดคุยกับผู้พัฒนา
 				</a>
 			</div>
 		</header>
 
 		<main>
 			<section class="section">
-				<h2>Why Students Love It</h2>
+				<h2>เหตุผลที่นักเรียนเลือกใช้</h2>
 				<div class="feature-grid">
 					<article class="feature-card">
-						<h3>One Tap, Real Balance</h3>
-						<p>Refresh the widget to fetch the latest canteen balance with full student account support.</p>
+						<h3>ยอดคงเหลืออัปเดตเสมอ</h3>
+						<p>แตะรีเฟรชเพียงครั้งเดียวเพื่อดึงยอดล่าสุด รองรับบัญชีนักเรียนเต็มรูปแบบและบันทึกสถานะให้ดูย้อนหลังได้</p>
 					</article>
 					<article class="feature-card">
-						<h3>Secure by Design</h3>
-						<p>Credentials are stored in encrypted secure storage and cleared instantly when you log out.</p>
+						<h3>ปลอดภัยไว้ก่อน</h3>
+						<p>ข้อมูลล็อกอินถูกเก็บอย่างเข้ารหัสภายในอุปกรณ์ และจะถูกลบออกทันทีเมื่อคุณออกจากระบบ</p>
 					</article>
 					<article class="feature-card">
-						<h3>Theme Friendly</h3>
-						<p>Light and dark widget modes keep your home screen on-brand with day or night class schedules.</p>
+						<h3>ธีมเข้ากับหน้าจอ</h3>
+						<p>เลือกได้ทั้งโหมดสว่างและมืด เพื่อให้วิดเจ็ตเข้ากับสไตล์หน้าจอของคุณตลอดทั้งวัน</p>
 					</article>
 					<article class="feature-card">
-						<h3>Debug Transparency</h3>
-						<p>Built-in logs show every login, refresh, and network response so you can troubleshoot quickly.</p>
+						<h3>มีบันทึกการทำงาน</h3>
+						<p>ดูประวัติการล็อกอิน รีเฟรช และสถานะการทำงานทั้งหมดได้จากหน้าต่างบันทึกในแอป</p>
 					</article>
 				</div>
 			</section>
 
 			<section class="section">
-				<h2>Get Started in Minutes</h2>
+				<h2>เริ่มใช้งานในไม่กี่ขั้นตอน</h2>
 				<div class="steps">
 					<div class="step">
-						<h3>Install the Expo build</h3>
-						<p>Load the latest APK or development build onto your device or emulator.</p>
+						<h3>ติดตั้งไฟล์ APK</h3>
+						<p>ดาวน์โหลดไฟล์ YRC_Canteen_installer_V_ii.apk แล้วติดตั้งบนอุปกรณ์หรือเครื่องจำลองของคุณ</p>
 					</div>
 					<div class="step">
-						<h3>Enter student credentials</h3>
-						<p>Open the in-app dashboard, add your username and password, then tap save to sync.</p>
+						<h3>กรอกข้อมูลนักเรียน</h3>
+						<p>เปิดหน้าจอตั้งค่าในแอป เพิ่มชื่อผู้ใช้และรหัสผ่าน จากนั้นกดบันทึกเพื่อซิงก์วิดเจ็ต</p>
 					</div>
 					<div class="step">
-						<h3>Pin the widget</h3>
-						<p>Long-press your Android home screen, pick “YRC Canteen Widget”, and drop it where it belongs.</p>
+						<h3>ปักหมุดวิดเจ็ต</h3>
+						<p>กดค้างที่หน้าจอหลัก เลือก “YRC Canteen Widget” แล้ววางไว้ในตำแหน่งที่ต้องการ</p>
 					</div>
 					<div class="step">
-						<h3>Refresh anytime</h3>
-						<p>Hit refresh or enable auto updates to stay on top of your cafeteria spending before lunch rush.</p>
+						<h3>รีเฟรชได้ทุกเมื่อ</h3>
+						<p>กดปุ่มรีเฟรชบนวิดเจ็ตหรือในแอป เพื่ออัปเดตยอดก่อนมื้อเที่ยงได้ตลอดเวลา</p>
 					</div>
+				</div>
+			</section>
+
+			<section class="section">
+				<h2>คู่มือการใช้งานฉบับย่อ</h2>
+				<div class="tutorial-grid">
+					<article class="tutorial-card">
+						<h3>1. ติดตั้งไฟล์ให้เสร็จสมบูรณ์</h3>
+						<ol>
+							<li>แตะปุ่ม “ดาวน์โหลดไฟล์ติดตั้ง Android” เพื่อรับไฟล์ APK เวอร์ชันล่าสุด</li>
+							<li>อนุญาตการติดตั้งจากแหล่งที่ไม่รู้จัก หากระบบแจ้งเตือน</li>
+							<li>เปิดไฟล์ YRC_Canteen_installer_V_ii.apk แล้วทำตามขั้นตอนบนหน้าจอ</li>
+						</ol>
+					</article>
+					<article class="tutorial-card">
+						<h3>2. ตั้งค่าบัญชีในแอป</h3>
+						<ol>
+							<li>เปิดแอปและกรอกชื่อผู้ใช้กับรหัสผ่านของบัญชีโรงอาหาร</li>
+							<li>ตรวจสอบให้แน่ใจว่าพิมพ์ถูกต้อง แล้วกด “บันทึกข้อมูล”</li>
+							<li>รอให้สถานะเปลี่ยนเป็นสำเร็จ วิดเจ็ตจะดึงข้อมูลล่าสุดให้อัตโนมัติ</li>
+						</ol>
+					</article>
+					<article class="tutorial-card">
+						<h3>3. ตั้งค่าวิดเจ็ตบนหน้าจอ</h3>
+						<ol>
+							<li>เพิ่มวิดเจ็ต “YRC Canteen” บนหน้าจอหลัก แล้วเลือกขนาด 4x2</li>
+							<li>วางให้เต็มคอลัมน์ หากตัวเลขยาววิดเจ็ตจะปรับขนาดอัตโนมัติ</li>
+							<li>แตะไอคอนรีเฟรชเพื่อเช็กยอดทันที และเปิดล็อกเพื่อดูประวัติ</li>
+						</ol>
+					</article>
+				</div>
+				<div class="tutorial-note">
+					เคล็ดลับ: หากเปลี่ยนรหัสผ่านหรือโทรศัพท์ รีเฟรชจากในแอปหนึ่งครั้งเพื่อซิงก์ข้อมูลใหม่ และอย่าลืมออกจากระบบเมื่อใช้งานเสร็จเพื่อความปลอดภัย
 				</div>
 			</section>
 
 			<section class="section preview">
 				<div class="preview-card">
-					<h3>Widget Sneak Peek</h3>
+					<h3>หน้าตาวิดเจ็ตจริง</h3>
 					<p>
-						A compact card that highlights your name, balance, and last refresh timestamp. Tap the refresh icon on
-						the widget to re-authenticate instantly.
+						การ์ดกะทัดรัดที่โชว์ชื่อเจ้าของบัญชี ยอดคงเหลือ และเวลาที่อัปเดตล่าสุด ช่วยให้คุณควบคุมค่าใช้จ่ายก่อนถึงโรงอาหารได้ง่ายกว่าเดิม
 					</p>
 				</div>
 			</section>
 		</main>
 
 		<footer>
-			Crafted by <a href="https://www.instagram.com/trophoston/" target="_blank" rel="noreferrer">@trophoston</a>
-			• Powered by Expo + React Native
+			พัฒนาโดย <a href="https://www.instagram.com/trophoston/" target="_blank" rel="noreferrer">@trophoston</a>
+			• ขับเคลื่อนด้วย Expo และ React Native
 		</footer>
 	</body>
 </html>

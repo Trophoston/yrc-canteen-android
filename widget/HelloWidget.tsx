@@ -22,6 +22,23 @@ const themes = {
   },
 } as const;
 
+const widgetFontFamily = '@font/line_seed_sans_th_a_rg';
+const widgetFontStyle = { fontFamily: widgetFontFamily } as const;
+
+function getBalanceTypography(text: string) {
+  const digits = text.replace(/[^0-9]/g, '');
+  if (digits.length >= 9) {
+    return { fontSize: 44, letterSpacing: -0.5 } as const;
+  }
+  if (digits.length >= 7) {
+    return { fontSize: 52, letterSpacing: -1 } as const;
+  }
+  if (digits.length >= 5) {
+    return { fontSize: 60, letterSpacing: -1.5 } as const;
+  }
+  return { fontSize: 68, letterSpacing: -2 } as const;
+}
+
 function formatLastUpdated(timestamp: number | null): string {
   if (!timestamp) {
     return 'ยังไม่ดึงข้อมูล';
@@ -51,6 +68,7 @@ export default function HelloWidget({ state }: HelloWidgetProps) {
   const isError = state.status === 'error';
   const isLoading = state.status === 'loading';
   const balanceText = isError ? '--' : state.balance ?? '--';
+  const balanceTypography = getBalanceTypography(`${balanceText}`);
   const statusText = (() => {
     if (isLoading) {
       return 'กำลังอัปเดต...';
@@ -67,8 +85,8 @@ export default function HelloWidget({ state }: HelloWidgetProps) {
         height: 'match_parent',
         width: 'match_parent',
         backgroundColor: palette.surface,
-        borderRadius: 28,
-        padding: 16,
+        borderRadius: 18,
+        padding: 12,
         flexDirection: 'column',
         justifyContent: 'space-between',
       }}
@@ -84,18 +102,22 @@ export default function HelloWidget({ state }: HelloWidgetProps) {
         <TextWidget
           text="YRC CANTEEN"
           style={{
+            ...widgetFontStyle,
+        fontFamily: 'LINESeedSansTH_A_Rg',
+            
             color: palette.primary,
             fontSize: 20,
-            fontWeight: '700',
           }}
           maxLines={1}
         />
         <TextWidget
           text="⟳"
           style={{
+            ...widgetFontStyle,
+        fontFamily: 'LINESeedSansTH_A_Rg',
+            
             color: palette.primary,
             fontSize: 22,
-            fontWeight: '700',
             padding: 4,
             borderRadius: 999,
             borderWidth: isLoading ? 0 : 1,
@@ -117,10 +139,12 @@ export default function HelloWidget({ state }: HelloWidgetProps) {
         <TextWidget
           text={balanceText}
           style={{
+            ...widgetFontStyle,
+        fontFamily: 'LINESeedSansTH_A_Rg',
+            
             color: palette.accent,
-            fontSize: 72,
-            fontWeight: '700',
-            letterSpacing: -2,
+            fontSize: balanceTypography.fontSize,
+            letterSpacing: balanceTypography.letterSpacing,
           }}
           maxLines={1}
           truncate="END"
@@ -128,10 +152,12 @@ export default function HelloWidget({ state }: HelloWidgetProps) {
         <TextWidget
           text="คงเหลือ"
           style={{
+            ...widgetFontStyle,
+        fontFamily: 'LINESeedSansTH_A_Rg',
+            
             color: palette.secondary,
-            fontSize: 20,
-            fontWeight: '600',
-            paddingBottom: 8,
+            fontSize: 18,
+            paddingBottom: 6,
           }}
         />
       </FlexWidget>
@@ -142,15 +168,17 @@ export default function HelloWidget({ state }: HelloWidgetProps) {
           justifyContent: 'space-between',
           alignItems: 'flex-end',
           width: 'match_parent',
-          marginTop: 16,
+          marginTop: 10,
         }}
       >
         <TextWidget
           text={statusText}
           style={{
+            ...widgetFontStyle,
+        fontFamily: 'LINESeedSansTH_A_Rg',
+            
             color: isError ? '#e14747' : palette.secondary,
-            fontSize: 16,
-            fontWeight: '500',
+            fontSize: 15,
           }}
           truncate="END"
           maxLines={1}
@@ -158,9 +186,11 @@ export default function HelloWidget({ state }: HelloWidgetProps) {
         <TextWidget
           text={formatLastUpdated(state.lastUpdatedAt)}
           style={{
+            ...widgetFontStyle,
+        fontFamily: 'LINESeedSansTH_A_Rg',
+            
             color: palette.muted,
-            fontSize: 14,
-            fontWeight: '400',
+            fontSize: 13,
           }}
           maxLines={1}
           truncate="END"

@@ -21,9 +21,14 @@ import {
   Switch,
   Text,
   TextInput,
+  TextStyle,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { WidgetPreview, requestWidgetUpdate } from 'react-native-android-widget';
+
+const FONT_REGULAR = 'LINESeedSansTH-Regular';
+const textFontStyle: TextStyle = { fontFamily: FONT_REGULAR };
 
 export default function Index() {
   const [widgetState, setWidgetState] = useState<WidgetState | null>(null);
@@ -37,6 +42,24 @@ export default function Index() {
   const [logsVisible, setLogsVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
+  const { width } = useWindowDimensions();
+
+  const scale = useMemo(() => {
+    const normalized = width / 420;
+    return Math.max(Math.min(normalized, 1.15), 0.85);
+  }, [width]);
+
+  const previewWidth = useMemo(() => {
+    const containerPadding = Math.round(24 * scale);
+    const availableWidth = width - containerPadding * 2;
+    const minWidth = 260;
+    const maxWidth = 360;
+    return Math.min(Math.max(availableWidth, minWidth), maxWidth);
+  }, [scale, width]);
+
+  const previewHeight = useMemo(() => Number((previewWidth * (200 / 320)).toFixed(1)), [previewWidth]);
+
+  const styles = useMemo(() => createStyles(scale), [scale]);
 
   const appendLog = useCallback((message: string) => {
     setLogs((current) => {
@@ -216,8 +239,8 @@ export default function Index() {
       <View style={styles.previewWrapper}>
         <WidgetPreview
           renderWidget={() => <HelloWidget state={previewState} />}
-          width={320}
-          height={200}
+          width={previewWidth}
+          height={previewHeight}
         />
       </View>
 
@@ -274,7 +297,7 @@ export default function Index() {
           <View>
             <Text style={styles.sectionTitle}>ข้อมูลปัจจุบัน</Text>
             {previewState.ownerName ? (
-              <Text style={styles.sectionHint}>บัญชี: {previewState.ownerName}</Text>
+              <Text style={styles.sectionHint}>{previewState.ownerName}</Text>
             ) : null}
             <Text style={styles.sectionHint}>
               {previewState.lastUpdatedAt
@@ -345,197 +368,211 @@ export default function Index() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 24,
-    gap: 24,
-    backgroundColor: '#f4f2ee',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  heading: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1f1f1f',
-  },
-  infoButton: {
-    backgroundColor: '#ffffff',
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    shadowColor: '#000000',
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  infoButtonText: {
-    fontSize: 16,
-  },
-  previewWrapper: {
-    alignItems: 'center',
-  },
-  section: {
-    backgroundColor: '#ffffff',
-    padding: 20,
-    borderRadius: 16,
-    shadowColor: '#000000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
-    elevation: 2,
-    gap: 12,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1f1f1f',
-  },
-  sectionHint: {
-    fontSize: 13,
-    color: '#6b6b6b',
-  },
-  input: {
-    backgroundColor: '#f3f3f3',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#1f1f1f',
-  },
-  button: {
-    backgroundColor: '#1f1f1f',
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  logoutButton: {
-    marginTop: 12,
-    backgroundColor: '#fee2e2',
-    borderWidth: 1,
-    borderColor: '#fecaca',
-  },
-  logoutButtonText: {
-    color: '#b91c1c',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  secondaryButton: {
-    backgroundColor: '#f1efe7',
-    paddingHorizontal: 16,
-    minWidth: 140,
-  },
-  secondaryButtonText: {
-    color: '#1f1f1f',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  rowBetween: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  loadingIndicator: {
-    marginTop: 12,
-  },
-  logContainer: {
-    flex: 1,
-    backgroundColor: '#f4f2ee',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-  },
-  logHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  logTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1f1f1f',
-  },
-  closeButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#1f1f1f',
-    borderRadius: 12,
-  },
-  closeButtonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  logScroll: {
-    flex: 1,
-    borderRadius: 16,
-    backgroundColor: '#ffffff',
-  },
-  logContent: {
-    padding: 16,
-    gap: 12,
-  },
-  logEntry: {
-    fontSize: 14,
-    color: '#1f1f1f',
-  },
-  logEmpty: {
-    fontSize: 14,
-    color: '#6b6b6b',
-    textAlign: 'center',
-    marginTop: 24,
-  },
-  footer: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#6b6b6b',
-  },
-  footerLink: {
-    fontSize: 14,
-    color: '#2563eb',
-    fontWeight: '600',
-  },
-  errorOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.45)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  errorCard: {
-    width: '100%',
-    maxWidth: 420,
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 24,
-    gap: 16,
-    shadowColor: '#0f172a',
-    shadowOpacity: 0.12,
-    shadowOffset: { width: 0, height: 8 },
-    shadowRadius: 24,
-    elevation: 8,
-  },
-  errorTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#dc2626',
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: '#1f1f1f',
-    lineHeight: 22,
-  },
-});
+function createStyles(scale: number) {
+  const font = (value: number) => Number((value * scale).toFixed(2));
+  const spacing = (value: number) => Math.round(value * scale);
+  const minActionWidth = Math.max(Math.round(140 * scale), 110);
+
+  return StyleSheet.create({
+    container: {
+      padding: spacing(24),
+      gap: spacing(24),
+      backgroundColor: '#f4f2ee',
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: spacing(12),
+    },
+    heading: {
+      ...textFontStyle,
+      fontSize: font(20),
+      color: '#1f1f1f',
+    },
+    infoButton: {
+      backgroundColor: '#ffffff',
+      borderRadius: 999,
+      paddingHorizontal: spacing(12),
+      paddingVertical: spacing(6),
+      shadowColor: '#000000',
+      shadowOpacity: 0.08,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    infoButtonText: {
+      ...textFontStyle,
+      fontSize: font(16),
+    },
+    previewWrapper: {
+      alignItems: 'center',
+    },
+    section: {
+      backgroundColor: '#ffffff',
+      padding: spacing(20),
+      borderRadius: spacing(16),
+      shadowColor: '#000000',
+      shadowOpacity: 0.05,
+      shadowOffset: { width: 0, height: 4 },
+      shadowRadius: 12,
+      elevation: 2,
+      gap: spacing(12),
+    },
+    sectionTitle: {
+      ...textFontStyle,
+      fontSize: font(20),
+      color: '#1f1f1f',
+    },
+    sectionHint: {
+      ...textFontStyle,
+      fontSize: font(13),
+      color: '#6b6b6b',
+    },
+    input: {
+      ...textFontStyle,
+      backgroundColor: '#f3f3f3',
+      borderRadius: spacing(12),
+      paddingHorizontal: spacing(16),
+      paddingVertical: spacing(12),
+      fontSize: font(16),
+      color: '#1f1f1f',
+    },
+    button: {
+      backgroundColor: '#1f1f1f',
+      borderRadius: spacing(12),
+      paddingVertical: spacing(12),
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      ...textFontStyle,
+      color: '#ffffff',
+      fontSize: font(16),
+    },
+    logoutButton: {
+      marginTop: spacing(12),
+      backgroundColor: '#fee2e2',
+      borderWidth: 1,
+      borderColor: '#fecaca',
+    },
+    logoutButtonText: {
+      ...textFontStyle,
+      color: '#b91c1c',
+      fontSize: font(14),
+    },
+    secondaryButton: {
+      backgroundColor: '#f1efe7',
+      paddingHorizontal: spacing(16),
+      minWidth: minActionWidth,
+    },
+    secondaryButtonText: {
+      ...textFontStyle,
+      color: '#1f1f1f',
+      fontSize: font(14),
+    },
+    rowBetween: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    loadingIndicator: {
+      marginTop: spacing(12),
+    },
+    logContainer: {
+      flex: 1,
+      backgroundColor: '#f4f2ee',
+      paddingHorizontal: spacing(20),
+      paddingTop: spacing(60),
+      paddingBottom: spacing(20),
+    },
+    logHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing(16),
+    },
+    logTitle: {
+      ...textFontStyle,
+      fontSize: font(20),
+      color: '#1f1f1f',
+    },
+    closeButton: {
+      paddingHorizontal: spacing(16),
+      paddingVertical: spacing(8),
+      backgroundColor: '#1f1f1f',
+      borderRadius: spacing(12),
+    },
+    closeButtonText: {
+      ...textFontStyle,
+      color: '#ffffff',
+      fontSize: font(14),
+    },
+    logScroll: {
+      flex: 1,
+      borderRadius: spacing(16),
+      backgroundColor: '#ffffff',
+    },
+    logContent: {
+      padding: spacing(16),
+      gap: spacing(12),
+    },
+    logEntry: {
+      ...textFontStyle,
+      fontSize: font(14),
+      color: '#1f1f1f',
+    },
+    logEmpty: {
+      ...textFontStyle,
+      fontSize: font(14),
+      color: '#6b6b6b',
+      textAlign: 'center',
+      marginTop: spacing(24),
+    },
+    footer: {
+      alignItems: 'center',
+      gap: spacing(6),
+    },
+    footerText: {
+      ...textFontStyle,
+      fontSize: font(12),
+      color: '#6b6b6b',
+    },
+    footerLink: {
+      ...textFontStyle,
+      fontSize: font(14),
+      color: '#2563eb',
+    },
+    errorOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(15, 23, 42, 0.45)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: spacing(24),
+    },
+    errorCard: {
+      width: '100%',
+      maxWidth: 420,
+      backgroundColor: '#ffffff',
+      borderRadius: spacing(16),
+      padding: spacing(24),
+      gap: spacing(16),
+      shadowColor: '#0f172a',
+      shadowOpacity: 0.12,
+      shadowOffset: { width: 0, height: 8 },
+      shadowRadius: 24,
+      elevation: 8,
+    },
+    errorTitle: {
+      ...textFontStyle,
+      fontSize: font(18),
+      color: '#dc2626',
+    },
+    errorMessage: {
+      ...textFontStyle,
+      fontSize: font(16),
+      color: '#1f1f1f',
+      lineHeight: font(22),
+    },
+  });
+}
