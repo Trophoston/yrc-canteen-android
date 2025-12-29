@@ -200,7 +200,7 @@ export default function Index() {
   }, []);
 
   const handleOpenCredit2 = useCallback(() => {
-    Linking.openURL('https://github.com/trophoston').catch((error) => {
+    Linking.openURL('https://github.com/Trophoston/yrc-canteen-android').catch((error) => {
       console.warn('Failed to open Github link', error);
     });
   }, []);
@@ -300,9 +300,9 @@ export default function Index() {
         <Pressable onPress={handleOpenCredit} accessibilityRole="link">
           <Text style={styles.footerLink}>@trophoston</Text>
         </Pressable>
-        <Text style={styles.footerText}>Project Github</Text>
+        <Text style={styles.footerText}>Project Github Repositories</Text>
         <Pressable onPress={handleOpenCredit2} accessibilityRole="link">
-          <Text style={styles.footerLink}>@trophoston</Text>
+          <Text style={styles.footerLink}>yrc-canteen-android</Text>
         </Pressable>
       </View>
 
