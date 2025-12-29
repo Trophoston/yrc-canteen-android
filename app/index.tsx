@@ -22,8 +22,8 @@ import {
   Text,
   TextInput,
   TextStyle,
-  useWindowDimensions,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { WidgetPreview, requestWidgetUpdate } from 'react-native-android-widget';
 
