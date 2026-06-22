@@ -4,7 +4,7 @@
     "slug": "yrc-canteen-android",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/yrc_logo.png",
+    "icon": "./assets/images/newlogocool.png",
     "scheme": "yrccanteenandroid",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,9 +13,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
+        "backgroundColor": "#ffffff",
+        "foregroundImage": "./assets/images/newlogocool.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
@@ -24,14 +23,14 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/newlogocool.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/yrc_logo.png",
+          "image": "./assets/images/newlogocool.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -48,15 +47,74 @@
           ],
           "widgets": [
             {
-              "name": "Hello",
-              "label": "My Hello Widget",
-              "minWidth": "320dp",
-              "minHeight": "120dp",
-              "targetCellWidth": 5,
+              "name": "Canteen2x1",
+              "label": "YRC Canteen 2×1",
+              "description": "ยอดเงินคงเหลือแบบเล็กที่สุด",
+              "minWidth": "100dp",
+              "minHeight": "40dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 1,
+              "maxResizeWidth": "320dp",
+              "maxResizeHeight": "180dp",
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/images/widget-preview-2x1.png",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "Canteen4x1",
+              "label": "YRC Canteen 4×1",
+              "description": "ยอดเงินคงเหลือแบบแถบบาง",
+              "minWidth": "180dp",
+              "minHeight": "40dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 1,
+              "maxResizeWidth": "480dp",
+              "maxResizeHeight": "200dp",
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/images/widget-preview-4x1.png",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "Canteen4x2",
+              "label": "YRC Canteen 4×2",
+              "description": "ยอดเงินคงเหลือ พร้อมชื่อบัญชีและเวลาอัปเดต",
+              "minWidth": "180dp",
+              "minHeight": "90dp",
+              "targetCellWidth": 4,
               "targetCellHeight": 2,
-              "description": "This is my first widget",
-              "previewImage": "./assets/images/yrc_logo.png",
-              "updatePeriodMillis": 300000
+              "maxResizeWidth": "480dp",
+              "maxResizeHeight": "320dp",
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/images/widget-preview-4x2.png",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "Canteen4x3",
+              "label": "YRC Canteen 4×3",
+              "description": "ยอดเงินคงเหลือขนาดใหญ่ เห็นชัดเต็มตา",
+              "minWidth": "180dp",
+              "minHeight": "140dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 3,
+              "maxResizeWidth": "480dp",
+              "maxResizeHeight": "480dp",
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/images/widget-preview-4x3.png",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "Canteen2x2",
+              "label": "YRC Canteen 2×2",
+              "description": "ยอดเงินคงเหลือแบบจัตุรัสกะทัดรัด",
+              "minWidth": "100dp",
+              "minHeight": "90dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "maxResizeWidth": "320dp",
+              "maxResizeHeight": "320dp",
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/images/widget-preview-2x2.png",
+              "updatePeriodMillis": 1800000
             }
           ]
         }

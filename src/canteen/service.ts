@@ -1,6 +1,6 @@
 import { fetchCanteenSnapshot } from './api';
 import {
-  applyTheme,
+  applyAppearance,
   clearCredentials,
   clearPreferences,
   clearWidgetState,
@@ -10,6 +10,7 @@ import {
   loadPreferences,
   loadWidgetState as loadStoredState,
   saveCredentials,
+  saveDebugHtml,
   savePreferences,
   saveWidgetState,
 } from './storage';
@@ -18,18 +19,28 @@ import type { Credentials, WidgetPreferences, WidgetState } from './types';
 export type LogHandler = (message: string) => void;
 
 export const WIDGET_REFRESH_ACTION = 'canteen.widget.refresh';
-export const WIDGET_NAME = 'Hello';
+
+// Every widget size registered in app.json. The task handler is shared across all
+// of them; the responsive HelloWidget adapts to whichever size the user picked.
+export const WIDGET_NAMES = ['Canteen2x1', 'Canteen4x1', 'Canteen4x2', 'Canteen4x3', 'Canteen2x2'] as const;
+export const WIDGET_NAME = WIDGET_NAMES[2];
 
 export async function loadWidgetState(): Promise<WidgetState> {
   const [state, preferences] = await Promise.all([loadStoredState(), loadPreferences()]);
-  return applyTheme(state, preferences.theme);
+  return applyAppearance(state, preferences);
 }
 
 export async function persistPreferences(preferences: Partial<WidgetPreferences>): Promise<WidgetPreferences> {
   const updated = await savePreferences(preferences);
   const state = await loadStoredState();
-  await saveWidgetState(applyTheme(state, updated.theme));
+  await saveWidgetState(applyAppearance(state, updated));
   return updated;
+}
+
+/** Update any appearance preference (theme, colours, font, font size, extras) and return the new state. */
+export async function updateAppearance(partial: Partial<WidgetPreferences>): Promise<WidgetState> {
+  await persistPreferences(partial);
+  return loadWidgetState();
 }
 
 export async function persistCredentials(credentials: Credentials, logger?: LogHandler): Promise<WidgetState> {
@@ -43,13 +54,17 @@ export async function persistCredentials(credentials: Credentials, logger?: LogH
 export async function refreshWidgetState(logger?: LogHandler): Promise<WidgetState> {
   logger?.('เริ่มดึงข้อมูลยอดเงินล่าสุด');
   const [credentials, preferences] = await Promise.all([loadCredentials(), loadPreferences()]);
-  const baseState: WidgetState = {
-    status: 'loading',
-    balance: null,
-    ownerName: null,
-    lastUpdatedAt: null,
-    theme: preferences.theme,
-  };
+  const baseState: WidgetState = applyAppearance(
+    {
+      status: 'loading',
+      balance: null,
+      ownerName: null,
+      lastUpdatedAt: null,
+      theme: preferences.theme,
+      extras: null,
+    },
+    preferences,
+  );
 
   if (!credentials) {
     logger?.('ยังไม่ได้กำหนดบัญชี ขอให้เพิ่มชื่อผู้ใช้และรหัสผ่าน');
@@ -64,17 +79,24 @@ export async function refreshWidgetState(logger?: LogHandler): Promise<WidgetSta
 
   try {
     const snapshot = await fetchCanteenSnapshot(credentials, logger);
+    if (snapshot.debugHtml) {
+      await saveDebugHtml(snapshot.debugHtml);
+    }
     logger?.(`สำเร็จ: พบยอดเงิน ${snapshot.balanceText}`);
     if (snapshot.ownerName) {
       logger?.(`เจ้าของบัญชี: ${snapshot.ownerName}`);
     }
-    const state: WidgetState = {
-      status: 'ready',
-      balance: snapshot.balanceText,
-      ownerName: snapshot.ownerName,
-      lastUpdatedAt: snapshot.fetchedAt,
-      theme: preferences.theme,
-    };
+    const state: WidgetState = applyAppearance(
+      {
+        status: 'ready',
+        balance: snapshot.balanceText,
+        ownerName: snapshot.ownerName,
+        lastUpdatedAt: snapshot.fetchedAt,
+        theme: preferences.theme,
+        extras: snapshot.extras ?? null,
+      },
+      preferences,
+    );
     await saveWidgetState(state);
     return state;
   } catch (error) {
@@ -95,11 +117,7 @@ export async function refreshWidgetState(logger?: LogHandler): Promise<WidgetSta
 }
 
 export async function updateTheme(theme: WidgetPreferences['theme']): Promise<WidgetState> {
-  const preferences = await persistPreferences({ theme });
-  const state = await loadStoredState();
-  const themed = applyTheme(state, preferences.theme);
-  await saveWidgetState(themed);
-  return themed;
+  return updateAppearance({ theme });
 }
 
 export async function loadPreferencesWithDefaults(): Promise<WidgetPreferences> {
@@ -113,7 +131,7 @@ export async function logout(logger?: LogHandler): Promise<WidgetState> {
   await clearCredentials();
   await clearWidgetState();
   await clearPreferences();
-  const clearedState = applyTheme({ ...DEFAULT_STATE }, DEFAULT_PREFERENCES.theme);
+  const clearedState = applyAppearance({ ...DEFAULT_STATE }, DEFAULT_PREFERENCES);
   await saveWidgetState(clearedState);
   logger?.('ออกจากระบบสำเร็จ พร้อมสร้างเซสชันใหม่ในการล็อกอินถัดไป');
   return clearedState;

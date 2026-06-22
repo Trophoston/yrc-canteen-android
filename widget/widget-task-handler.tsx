@@ -22,8 +22,9 @@ async function safeRefresh(): Promise<WidgetState> {
 }
 
 export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
+  const { width, height } = props.widgetInfo ?? {};
   const render = (state: WidgetState) =>
-    props.renderWidget(<HelloWidget state={state} />);
+    props.renderWidget(<HelloWidget state={state} width={width} height={height} />);
 
   const renderLatest = async () => {
     const nextState = await safeRefresh();
@@ -40,6 +41,12 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
     case 'WIDGET_UPDATE':
       await renderLatest();
       break;
+    case 'WIDGET_RESIZED': {
+      // Re-render the cached state at the new size — no network round-trip needed.
+      const cachedState = await loadWidgetState();
+      render(cachedState);
+      break;
+    }
     case 'WIDGET_CLICK':
       if (props.clickAction === REFRESH_CLICK_ACTION) {
         await renderLatest();

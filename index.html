@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>YRC Canteen Widget</title>
+		<title>วิดเจ็ตโรงอาหาร YRC — ตรวจสอบยอดคงเหลือ</title>
+		<!-- Meta Tags for SEO -->
+		<meta name="description" content="ตรวจสอบยอดคงเหลือโรงอาหาร YRC ทันทีบนหน้าจอหลักของคุณ ด้วยวิดเจ็ตสไตล์โมเดิร์นที่พัฒนาด้วย Expo และ React Native โหลดฟรี ติดตั้งง่าย" />
+		<meta name="keywords" content="YRC Canteen, วิดเจ็ตโรงอาหาร, ยุพราชวิทยาลัย, Yupparaj, Expo, React Native, Widget" />
+		
+
+
 		<style>
 			@font-face {
 				font-family: 'LINESeedSansTH';
@@ -12,376 +18,2009 @@
 			}
 
 			:root {
-				--bg: #f4f2ee;
-				--card: #ffffff;
-				--accent: #1f1f1f;
-				--primary: #1f1f1f;
-				--muted: #6b6b6b;
-				--radius: 18px;
-				--shadow: 0 24px 60px rgba(17, 24, 39, 0.12);
-				--highlight: #f7f3e8;
+				--bg-primary: #faf9f6;
+				--bg-secondary: #f4f2ee;
+				--bg-card: #ffffff;
+				--text-primary: #151413;
+				--text-secondary: #656360;
+				--text-muted: #95938f;
+				--border-color: rgba(21, 20, 19, 0.08);
+				--accent-primary: #1f1f1f;
+				--accent-primary-hover: #333333;
+				--accent-color: #2196f3;
+				--accent-green: #1f9d55;
+				--accent-orange: #e08a1e;
+				--accent-red: #d63a2f;
+				--accent-gold: #ffd34d;
+				--radius-lg: 24px;
+				--radius-md: 16px;
+				--radius-sm: 12px;
+				--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.02);
+				--shadow-md: 0 12px 36px rgba(17, 24, 39, 0.04);
+				--shadow-lg: 0 24px 60px rgba(17, 24, 39, 0.08);
+				--font-heading: 'LINESeedSansTH', system-ui, sans-serif;
+				--font-body: 'LINESeedSansTH', system-ui, sans-serif;
+				--transition-speed: 0.3s;
+			}
+
+			/* Dark Mode class applied manually or automatically */
+			body.dark-mode {
+				--bg-primary: #121110;
+				--bg-secondary: #1a1918;
+				--bg-card: #201f1e;
+				--text-primary: #f7f6f5;
+				--text-secondary: #b5b3af;
+				--text-muted: #7c7a76;
+				--border-color: rgba(247, 246, 245, 0.08);
+				--accent-primary: #ffffff;
+				--accent-primary-hover: #e5e5e5;
+				--shadow-md: 0 12px 36px rgba(0, 0, 0, 0.2);
+				--shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.3);
 			}
 
 			* {
 				box-sizing: border-box;
+				transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+				font-family: var(--font-body);
 			}
 
 			body {
 				margin: 0;
-				font-family: 'LINESeedSansTH', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-				background: var(--bg);
-				color: var(--accent);
+				background: var(--bg-primary);
+				color: var(--text-primary);
+				line-height: 1.6;
+				overflow-x: hidden;
 			}
 
+			/* Navbar style */
+			.navbar {
+				position: sticky;
+				top: 0;
+				z-index: 100;
+				background: rgba(250, 249, 246, 0.8);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
+				border-bottom: 1px solid var(--border-color);
+				padding: 16px 24px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			body.dark-mode .navbar {
+				background: rgba(18, 17, 16, 0.8);
+			}
+			.navbar-brand {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				text-decoration: none;
+				color: var(--text-primary);
+				font-family: var(--font-heading);
+				font-weight: 700;
+				font-size: 1.15rem;
+			}
+			.navbar-brand img {
+				width: 36px;
+				height: 36px;
+				border-radius: 8px;
+				object-fit: cover;
+			}
+			.theme-toggle-btn {
+				background: var(--bg-secondary);
+				border: 1px solid var(--border-color);
+				color: var(--text-primary);
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				transition: transform 0.2s ease, background-color 0.2s ease;
+			}
+			.theme-toggle-btn:hover {
+				transform: scale(1.05);
+				background: var(--border-color);
+			}
+			.theme-toggle-btn svg {
+				width: 20px;
+				height: 20px;
+			}
+
+			/* Hero section */
 			header {
-				padding: 64px 20px 32px;
+				padding: 80px 24px 48px;
 				text-align: center;
+				max-width: 900px;
+				margin: 0 auto;
 			}
 
 			header h1 {
-				margin: 0 0 16px;
-				font-size: clamp(2.4rem, 4vw, 3.4rem);
-				letter-spacing: -0.04em;
+				font-family: var(--font-heading);
+				font-weight: 800;
+				margin: 0 0 20px;
+				font-size: clamp(2.6rem, 5vw, 4rem);
+				line-height: 1.15;
+				letter-spacing: -0.03em;
+				background: linear-gradient(135deg, var(--text-primary) 30%, var(--text-secondary));
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
 			}
 
 			header p {
-				margin: 0 auto;
-				max-width: 720px;
-				font-size: 1.1rem;
-				color: var(--muted);
+				margin: 0 auto 36px;
+				max-width: 680px;
+				font-size: 1.25rem;
+				color: var(--text-secondary);
+				font-weight: 500;
 				line-height: 1.7;
 			}
 
-			.cta-buttons {
-				margin-top: 32px;
-				display: flex;
-				justify-content: center;
-				gap: 16px;
-				flex-wrap: wrap;
+			/* Main CTA & Version downloads container */
+			.download-box {
+				background: var(--bg-card);
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius-lg);
+				padding: 32px;
+				max-width: 520px;
+				margin: 0 auto;
+				box-shadow: var(--shadow-lg);
+				position: relative;
 			}
 
-			.cta-buttons a {
-				padding: 14px 28px;
+			.download-badge {
+				position: absolute;
+				top: -12px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--accent-green);
+				color: white;
+				font-size: 0.75rem;
+				font-weight: 700;
+				padding: 4px 12px;
 				border-radius: 999px;
+				letter-spacing: 0.05em;
+				box-shadow: 0 4px 10px rgba(31, 157, 85, 0.3);
+			}
+
+			.download-title {
+				font-family: var(--font-heading);
+				font-size: 1.4rem;
+				font-weight: 700;
+				margin: 0 0 6px;
+			}
+
+			.download-meta {
+				font-size: 0.85rem;
+				color: var(--text-muted);
+				margin-bottom: 20px;
+				display: flex;
+				justify-content: center;
+				gap: 12px;
+			}
+
+			.cta-group {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+			}
+
+			.btn {
+				padding: 16px 28px;
+				border-radius: var(--radius-sm);
 				font-weight: 600;
 				text-decoration: none;
+				font-size: 1rem;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				cursor: pointer;
 				transition: transform 0.2s ease, box-shadow 0.2s ease;
 			}
 
-			.cta-primary {
-				background: var(--primary);
-				color: #ffffff;
-				box-shadow: 0 20px 40px rgba(17, 24, 39, 0.22);
+			.btn-primary {
+				background: var(--accent-primary);
+				color: var(--bg-card);
+				border: none;
+				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+			}
+			body.dark-mode .btn-primary {
+				box-shadow: 0 8px 24px rgba(255, 255, 255, 0.04);
 			}
 
-			.cta-secondary {
-				background: var(--card);
-				color: var(--accent);
-				border: 1px solid rgba(31, 41, 55, 0.1);
-			}
-
-			.cta-buttons a:hover {
+			.btn-primary:hover {
 				transform: translateY(-2px);
+				background: var(--accent-primary-hover);
+			}
+
+			.btn-secondary {
+				background: var(--bg-secondary);
+				color: var(--text-primary);
+				border: 1px solid var(--border-color);
+			}
+
+			.btn-secondary:hover {
+				background: var(--border-color);
+			}
+
+			/* Version Dropdown */
+			.versions-dropdown {
+				margin-top: 16px;
+				border-top: 1px solid var(--border-color);
+				padding-top: 16px;
+				text-align: left;
+			}
+
+			.versions-toggle {
+				width: 100%;
+				background: none;
+				border: none;
+				color: var(--text-secondary);
+				font-weight: 600;
+				font-size: 0.9rem;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				cursor: pointer;
+				padding: 8px 0;
+			}
+
+			.versions-toggle svg {
+				transition: transform 0.2s ease;
+			}
+
+			.versions-toggle.active svg {
+				transform: rotate(180deg);
+			}
+
+			.versions-list {
+				display: none;
+				flex-direction: column;
+				gap: 12px;
+				margin-top: 12px;
+				background: var(--bg-secondary);
+				padding: 16px;
+				border-radius: var(--radius-sm);
+				border: 1px solid var(--border-color);
+			}
+
+			.versions-list.open {
+				display: flex;
+			}
+
+			.version-item {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				font-size: 0.9rem;
+				padding-bottom: 8px;
+				border-bottom: 1px solid var(--border-color);
+			}
+
+			.version-item:last-child {
+				border-bottom: none;
+				padding-bottom: 0;
+			}
+
+			.version-info {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.version-tag {
+				font-weight: 700;
+				color: var(--text-primary);
+			}
+
+			.version-desc {
+				font-size: 0.75rem;
+				color: var(--text-muted);
+				margin-top: 2px;
+			}
+
+			.version-dl-link {
+				color: var(--accent-color);
+				text-decoration: none;
+				font-weight: 600;
+				display: flex;
+				align-items: center;
+				gap: 4px;
+			}
+
+			.version-dl-link:hover {
+				text-decoration: underline;
 			}
 
 			main {
-				padding: 32px 20px 80px;
+				padding: 32px 24px 80px;
+				max-width: 1140px;
+				margin: 0 auto;
 			}
 
 			.section {
-				max-width: 1100px;
-				margin: 0 auto 64px;
-				background: var(--card);
-				border-radius: var(--radius);
+				background: var(--bg-card);
+				border-radius: var(--radius-lg);
 				padding: 48px;
-				box-shadow: var(--shadow);
+				margin-bottom: 64px;
+				box-shadow: var(--shadow-md);
+				border: 1px solid var(--border-color);
 			}
 
 			.section h2 {
 				margin-top: 0;
+				font-family: var(--font-heading);
 				font-size: clamp(1.8rem, 3vw, 2.4rem);
+				font-weight: 800;
 				letter-spacing: -0.02em;
+				margin-bottom: 12px;
 			}
 
+			.section-subtitle {
+				color: var(--text-secondary);
+				margin-top: 0;
+				margin-bottom: 32px;
+				font-size: 1.05rem;
+			}
+
+			/* Features Grid */
 			.feature-grid {
-				margin-top: 32px;
 				display: grid;
 				gap: 24px;
 				grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 			}
 
 			.feature-card {
-				padding: 24px;
-				border-radius: 16px;
-				border: 1px solid rgba(31, 41, 55, 0.08);
-				background: linear-gradient(155deg, rgba(31, 31, 31, 0.06), rgba(31, 31, 31, 0.01));
+				padding: 28px;
+				border-radius: var(--radius-md);
+				border: 1px solid var(--border-color);
+				background: var(--bg-secondary);
+				display: flex;
+				flex-direction: column;
+				gap: 16px;
+			}
+
+			.feature-icon-wrapper {
+				width: 48px;
+				height: 48px;
+				border-radius: 12px;
+				background: var(--bg-card);
+				border: 1px solid var(--border-color);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: var(--text-primary);
 			}
 
 			.feature-card h3 {
-				margin: 0 0 12px;
-				font-size: 1.2rem;
+				margin: 0;
+				font-family: var(--font-heading);
+				font-size: 1.25rem;
+				font-weight: 700;
 			}
 
 			.feature-card p {
 				margin: 0;
-				color: var(--muted);
+				color: var(--text-secondary);
+				font-size: 0.95rem;
 				line-height: 1.6;
 			}
 
-			.tutorial-grid {
+			/* Simulator Section Layout */
+			.simulator-container {
 				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 48px;
+				align-items: start;
+			}
+
+			/* Simulator Controls */
+			.sim-controls {
+				display: flex;
+				flex-direction: column;
 				gap: 24px;
-				grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+			}
+
+			.control-group {
+				display: flex;
+				flex-direction: column;
+				gap: 10px;
+			}
+
+			.control-label {
+				font-size: 0.9rem;
+				font-weight: 700;
+				color: var(--text-secondary);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+			}
+
+			/* Size selectors */
+			.size-selector {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+
+			.size-btn {
+				background: var(--bg-secondary);
+				border: 1px solid var(--border-color);
+				color: var(--text-primary);
+				padding: 8px 16px;
+				border-radius: var(--radius-sm);
+				cursor: pointer;
+				font-weight: 600;
+				font-size: 0.85rem;
+				transition: all 0.2s ease;
+			}
+
+			.size-btn.active, .size-btn:hover {
+				background: var(--accent-primary);
+				color: var(--bg-card);
+				border-color: var(--accent-primary);
+			}
+
+			/* Color inputs wrapper */
+			.color-row {
+				display: flex;
+				gap: 16px;
+				align-items: center;
+			}
+
+			.color-input-container {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				background: var(--bg-secondary);
+				border: 1px solid var(--border-color);
+				padding: 6px 12px;
+				border-radius: var(--radius-sm);
+				flex: 1;
+			}
+
+			.color-input-container label {
+				font-size: 0.85rem;
+				font-weight: 600;
+				cursor: pointer;
+			}
+
+			.color-circle {
+				-webkit-appearance: none;
+				-moz-appearance: none;
+				appearance: none;
+				width: 30px;
+				height: 30px;
+				border: 1px solid var(--border-color);
+				border-radius: 50%;
+				cursor: pointer;
+				background: none;
+				padding: 0;
+			}
+
+			.color-circle::-webkit-color-swatch-wrapper {
+				padding: 0;
+			}
+			.color-circle::-webkit-color-swatch {
+				border: none;
+				border-radius: 50%;
+			}
+
+			/* Preset Colors Row */
+			.preset-row {
+				display: flex;
+				gap: 8px;
+				margin-top: 4px;
+				flex-wrap: wrap;
+			}
+
+			.preset-dot {
+				width: 24px;
+				height: 24px;
+				border-radius: 50%;
+				border: 2px solid transparent;
+				cursor: pointer;
+				box-shadow: var(--shadow-sm);
+			}
+
+			.preset-dot.active {
+				border-color: var(--accent-primary);
+				transform: scale(1.1);
+			}
+
+			/* Toggles Row */
+			.toggles-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 16px;
+			}
+
+			.toggle-item {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				background: var(--bg-secondary);
+				border: 1px solid var(--border-color);
+				padding: 12px 16px;
+				border-radius: var(--radius-sm);
+			}
+
+			.toggle-item span {
+				font-size: 0.9rem;
+				font-weight: 600;
+			}
+
+			.switch {
+				position: relative;
+				display: inline-block;
+				width: 44px;
+				height: 24px;
+			}
+
+			.switch input {
+				opacity: 0;
+				width: 0;
+				height: 0;
+			}
+
+			.slider {
+				position: absolute;
+				cursor: pointer;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: var(--border-color);
+				transition: .3s;
+				border-radius: 34px;
+			}
+
+			.slider:before {
+				position: absolute;
+				content: "";
+				height: 18px;
+				width: 18px;
+				left: 3px;
+				bottom: 3px;
+				background-color: white;
+				transition: .3s;
+				border-radius: 50%;
+			}
+
+			input:checked + .slider {
+				background-color: var(--accent-green);
+			}
+
+			input:checked + .slider:before {
+				transform: translateX(20px);
+			}
+
+			/* Balance Slider */
+			.range-slider-container {
+				background: var(--bg-secondary);
+				border: 1px solid var(--border-color);
+				padding: 16px;
+				border-radius: var(--radius-sm);
+			}
+
+			.range-header {
+				display: flex;
+				justify-content: space-between;
+				font-size: 0.9rem;
+				font-weight: 700;
+				margin-bottom: 8px;
+			}
+
+			.range-input {
+				width: 100%;
+				cursor: pointer;
+				accent-color: var(--accent-primary);
+			}
+
+			/* Device Mockup containing simulated Widget */
+			.sim-mockup {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				position: relative;
+			}
+
+			/* Launcher Screen representation */
+			.device-screen {
+				width: 360px;
+				height: 560px;
+				background: radial-gradient(circle at top left, #6a11cb 0%, #2575fc 100%);
+				border-radius: 36px;
+				border: 12px solid #2a2a2a;
+				padding: 20px 16px;
+				position: relative;
+				box-shadow: var(--shadow-lg);
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				grid-template-rows: repeat(5, 1fr);
+				gap: 10px;
+				overflow: hidden;
+			}
+
+			/* Simulated Grid Wallpaper elements */
+			.device-wallpaper-decor {
+				position: absolute;
+				bottom: -20px;
+				right: -20px;
+				width: 180px;
+				height: 180px;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.1);
+				filter: blur(20px);
+				pointer-events: none;
+			}
+
+			/* Launcher Icons */
+			.launcher-icon {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 4px;
+				grid-column: span 1;
+				pointer-events: none;
+				justify-content: center;
+			}
+
+			.icon-shape {
+				width: 44px;
+				height: 44px;
+				border-radius: 12px;
+				background: rgba(255, 255, 255, 0.2);
+				backdrop-filter: blur(4px);
+				-webkit-backdrop-filter: blur(4px);
+				border: 1px solid rgba(255,255,255,0.1);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				font-size: 1.2rem;
+			}
+
+			.icon-label {
+				font-size: 0.65rem;
+				color: rgba(255,255,255,0.85);
+				text-align: center;
+				font-weight: 500;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				width: 100%;
+			}
+
+			/* Active Widget Wrapper */
+			.simulated-widget-container {
+				grid-column: span 4;
+				grid-row: span 2;
+				transition: grid-column 0.3s, grid-row 0.3s;
+				z-index: 10;
+				align-self: center;
+			}
+
+			/* Layout specific grid styles */
+			.device-screen.w-size-2x1 .simulated-widget-container {
+				grid-column: 2 / span 2;
+				grid-row: 2 / span 1;
+			}
+			.device-screen.w-size-4x1 .simulated-widget-container {
+				grid-column: 1 / span 4;
+				grid-row: 2 / span 1;
+			}
+			.device-screen.w-size-4x2 .simulated-widget-container {
+				grid-column: 1 / span 4;
+				grid-row: 2 / span 2;
+			}
+			.device-screen.w-size-4x3 .simulated-widget-container {
+				grid-column: 1 / span 4;
+				grid-row: 2 / span 3;
+			}
+			.device-screen.w-size-2x2 .simulated-widget-container {
+				grid-column: 2 / span 2;
+				grid-row: 2 / span 2;
+			}
+
+			/* Hidden icon slots based on widget size */
+			.launcher-icon.slot-row2, .launcher-icon.slot-row3, .launcher-icon.slot-row4 {
+				transition: opacity 0.3s ease;
+			}
+
+			.w-size-2x1 .slot-center,
+			.w-size-4x1 .slot-row2,
+			.w-size-4x2 .slot-row2, .w-size-4x2 .slot-row3,
+			.w-size-4x3 .slot-row2, .w-size-4x3 .slot-row3, .w-size-4x3 .slot-row4,
+			.w-size-2x2 .slot-center, .w-size-2x2 .slot-center-row3 {
+				opacity: 0;
+				visibility: hidden;
+			}
+
+			/* Widget Preview styles */
+			.widget-view {
+				--w-surface: #f6f1e6;
+				--w-ink: #1f1d18;
+				--w-ink-soft: #57534a;
+				--w-ink-muted: #938c7c;
+				--w-hairline: #e7dfcd;
+				--w-chip: #ffffff;
+				--w-chip-border: #e7dfcd;
+				--w-status-accent: #1f9d55;
+				
+				background-color: var(--w-surface);
+				color: var(--w-ink);
+				width: 100%;
+				height: 100%;
+				border-radius: 20px;
+				padding: 16px;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+				border: 1.5px solid var(--w-hairline);
+				transition: padding var(--transition-speed), border-radius var(--transition-speed);
+				user-select: none;
+				overflow: hidden;
+				font-family: 'LINESeedSansTH', system-ui, sans-serif;
+			}
+
+			.w-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				width: 100%;
+			}
+
+			.w-brand {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 0.1em;
+				color: var(--w-ink-muted);
+			}
+
+			.w-dot {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				background-color: var(--w-status-accent);
+			}
+
+			.w-header-actions {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+
+			.w-pet-wrapper {
+				width: 40px;
+				height: 40px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.w-refresh {
+				width: 32px;
+				height: 32px;
+				border-radius: 50%;
+				background-color: var(--w-chip);
+				border: 1px solid var(--w-chip-border);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: var(--w-ink);
+				cursor: pointer;
+			}
+			.w-refresh svg {
+				width: 16px;
+				height: 16px;
+			}
+			.w-refresh:hover svg {
+				transform: rotate(180deg);
+				transition: transform 0.4s ease;
+			}
+
+			.w-hero {
+				display: flex;
+				align-items: center;
+				justify-content: flex-start;
+				margin: 4px 0;
+				min-width: 0;
+				overflow: hidden;
+				flex: 1;
+			}
+
+			.w-balance {
+				font-size: 38px;
+				font-weight: 700;
+				letter-spacing: -0.03em;
+				margin: 0;
+				line-height: 1.1;
+				white-space: nowrap;
+				overflow: hidden;
+				min-width: 0;
+			}
+
+			.w-stats-strip {
+				display: none;
+				gap: 12px;
+				margin-bottom: 10px;
+				width: 100%;
+			}
+
+			.w-stat-col {
+				display: flex;
+				flex-direction: column;
+				gap: 2px;
+				flex: 1;
+			}
+
+			.w-stat-label {
+				font-size: 10px;
+				color: var(--w-ink-muted);
+			}
+
+			.w-stat-val {
+				font-size: 13px;
+				font-weight: 700;
+				color: var(--w-ink-soft);
+			}
+
+			.w-divider {
+				display: none;
+				width: 100%;
+				height: 1px;
+				background-color: var(--w-hairline);
+				margin-bottom: 10px;
+			}
+
+			.w-footer {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				width: 100%;
+			}
+
+			.w-owner {
+				font-size: 13px;
+				color: var(--w-ink-soft);
+				font-weight: 500;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-width: 60%;
+			}
+
+			.w-meta {
+				font-size: 11px;
+				color: var(--w-ink-muted);
+			}
+
+			/* CSS layout configuration variations */
+			/* Body row — always flex-row so the JS-appended pet sits beside the balance */
+			#w-body-row-container {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				min-width: 0;
+				overflow: hidden;
+			}
+
+			/* 2x1 Layout overrides */
+			.w-size-2x1 .widget-view {
+				padding: 10px;
+				border-radius: 18px;
+			}
+			.w-size-2x1 .w-brand {
+				font-size: 10px;
+			}
+			.w-size-2x1 .w-dot {
+				width: 7px;
+				height: 7px;
+			}
+			.w-size-2x1 .w-refresh {
+				width: 22px;
+				height: 22px;
+			}
+			.w-size-2x1 .w-refresh svg {
+				width: 11px;
+				height: 11px;
+			}
+			/* Pet sits at end of body row on 2x1 */
+			.w-size-2x1 .w-pet-wrapper {
+				width: 24px;
+				height: 24px;
+				flex-shrink: 0;
+			}
+			.w-size-2x1 .w-hero {
+				margin: 0;
+			}
+			.w-size-2x1 .w-balance {
+				font-size: 26px;
+			}
+			.w-size-2x1 .w-owner {
+				display: none;
+			}
+			.w-size-2x1 .w-meta {
+				font-size: 10px;
+				width: 100%;
+			}
+
+			/* 4x1 Layout overrides */
+			.w-size-4x1 .widget-view {
+				padding: 12px 14px;
+				border-radius: 20px;
+			}
+			.w-size-4x1 .w-brand {
+				font-size: 12px;
+			}
+			.w-size-4x1 .w-refresh {
+				width: 28px;
+				height: 28px;
+			}
+			.w-size-4x1 .w-refresh svg {
+				width: 14px;
+				height: 14px;
+			}
+			.w-size-4x1 .w-pet-wrapper {
+				width: 30px;
+				height: 30px;
+			}
+			.w-size-4x1 .w-hero {
+				margin: 2px 0;
+			}
+			.w-size-4x1 .w-balance {
+				font-size: 32px;
+			}
+			.w-size-4x1 .w-owner {
+				display: none;
+			}
+			.w-size-4x1 .w-meta {
+				font-size: 12px;
+				width: 100%;
+			}
+
+			/* 4x2 Layout (Standard) - matches defaults */
+			.w-size-4x2 .w-balance {
+				font-size: 50px;
+			}
+
+			/* 4x3 Layout (Roomy) overrides */
+			.w-size-4x3 .widget-view {
+				padding: 20px;
+				border-radius: 26px;
+			}
+			.w-size-4x3 .w-brand {
+				font-size: 13px;
+			}
+			.w-size-4x3 .w-dot {
+				width: 9px;
+				height: 9px;
+			}
+			.w-size-4x3 .w-refresh {
+				width: 36px;
+				height: 36px;
+			}
+			.w-size-4x3 .w-refresh svg {
+				width: 18px;
+				height: 18px;
+			}
+			.w-size-4x3 .w-pet-wrapper {
+				width: 46px;
+				height: 46px;
+			}
+			.w-size-4x3 .w-balance {
+				font-size: 64px;
+			}
+			.w-size-4x3 .w-stats-strip.has-extras {
+				display: flex;
+			}
+			.w-size-4x3 .w-divider.has-extras {
+				display: block;
+			}
+			.w-size-4x3 .w-owner {
+				font-size: 14px;
+			}
+
+			/* 2x2 Layout overrides */
+			.w-size-2x2 .widget-view {
+				padding: 14px;
+				border-radius: 24px;
+			}
+			.w-size-2x2 .w-balance {
+				font-size: 32px;
+			}
+			.w-size-2x2 .w-footer {
+				align-items: center;
+				gap: 8px;
+			}
+			.w-size-2x2 .w-footer .w-pet-wrapper {
+				display: flex;
+				width: 28px;
+				height: 28px;
+				flex-shrink: 0;
+				order: 2;
+			}
+			.w-size-2x2 .w-owner {
+				display: none;
+			}
+			.w-size-2x2 .w-meta {
+				font-size: 12px;
+				flex: 1;
+				min-width: 0;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			/* Responsive changes for simulator grid */
+			@media (max-width: 820px) {
+				.simulator-container {
+					grid-template-columns: 1fr;
+					gap: 36px;
+				}
+				.sim-mockup {
+					order: -1;
+				}
+			}
+
+			/* Steps layout */
+			.steps {
+				display: grid;
+				gap: 20px;
+				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 				margin-top: 32px;
 			}
 
-			.tutorial-card {
-				padding: 28px;
-				border-radius: 18px;
-				background: var(--card);
-				border: 1px solid rgba(31, 31, 31, 0.08);
-				box-shadow: 0 18px 36px rgba(17, 24, 39, 0.08);
-				display: grid;
-				gap: 18px;
+			.step-card {
+				background: var(--bg-secondary);
+				border: 1px solid var(--border-color);
+				padding: 32px 24px;
+				border-radius: var(--radius-md);
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				gap: 16px;
 			}
 
-			.tutorial-card h3 {
+			.step-num {
+				font-family: var(--font-heading);
+				font-size: 3rem;
+				font-weight: 800;
+				line-height: 1;
+				color: var(--border-color);
+				position: absolute;
+				top: 16px;
+				right: 24px;
+			}
+
+			.step-card h3 {
 				margin: 0;
-				font-size: clamp(1.2rem, 2.4vw, 1.35rem);
-				color: var(--accent);
+				font-family: var(--font-heading);
+				font-weight: 700;
+				font-size: 1.2rem;
+				z-index: 1;
 			}
 
-			.tutorial-card ol {
+			.step-card p {
+				margin: 0;
+				color: var(--text-secondary);
+				font-size: 0.95rem;
+				line-height: 1.6;
+			}
+
+			/* Quick Guide Accordion */
+			.guide-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 24px;
+				margin-top: 32px;
+			}
+
+			.guide-card {
+				background: var(--bg-secondary);
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius-md);
+				padding: 28px;
+			}
+
+			.guide-card h3 {
+				margin-top: 0;
+				margin-bottom: 16px;
+				font-family: var(--font-heading);
+				font-size: 1.2rem;
+				font-weight: 700;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+
+			.guide-card ol {
 				margin: 0;
 				padding-left: 20px;
-				display: grid;
+				display: flex;
+				flex-direction: column;
 				gap: 12px;
-				color: var(--muted);
-				line-height: 1.6;
+				color: var(--text-secondary);
+				font-size: 0.95rem;
+			}
+
+			.guide-card li::marker {
+				font-weight: 700;
+				color: var(--text-primary);
 			}
 
 			.tutorial-note {
 				margin-top: 24px;
-				padding: 18px 24px;
-				background: var(--highlight);
-				border-radius: 16px;
-				border: 1px solid rgba(31, 31, 31, 0.08);
-				color: var(--accent);
-				line-height: 1.6;
-			}
-
-			.steps {
-				counter-reset: steps;
-				margin-top: 32px;
-				display: grid;
-				gap: 20px;
-			}
-
-			.step {
-				display: grid;
+				padding: 20px 24px;
+				background: rgba(255, 211, 77, 0.08);
+				border: 1.5px dashed rgba(255, 211, 77, 0.4);
+				border-radius: var(--radius-sm);
+				color: var(--text-primary);
+				font-size: 0.95rem;
+				font-weight: 500;
+				display: flex;
+				align-items: flex-start;
 				gap: 12px;
-				padding: 24px;
-				border-radius: 16px;
-				border: 1px solid rgba(31, 41, 55, 0.08);
-				background: #ffffff;
+			}
+			body.dark-mode .tutorial-note {
+				background: rgba(255, 211, 77, 0.03);
 			}
 
-			.step::before {
-				counter-increment: steps;
-				content: counter(steps);
-				width: 44px;
-				height: 44px;
-				display: grid;
-				place-items: center;
-				border-radius: 12px;
-				background: rgba(31, 31, 31, 0.1);
-				color: var(--primary);
-				font-weight: 700;
-				font-size: 1.1rem;
-			}
-
-			.step h3 {
-				margin: 0;
-				font-size: 1.25rem;
-			}
-
-			.step p {
-				margin: 0;
-				color: var(--muted);
-				line-height: 1.6;
-			}
-
-			.preview {
-				margin-top: 40px;
-				display: grid;
-				gap: 28px;
-				align-items: center;
-			}
-
-			.preview-card {
-				border-radius: 24px;
-				padding: 40px;
-				background: radial-gradient(circle at top left, rgba(31, 31, 31, 0.12), rgba(255, 255, 255, 0.95));
-				border: 1px solid rgba(31, 31, 31, 0.12);
-				text-align: center;
-			}
-
-			.preview-card h3 {
-				margin: 0 0 12px;
-				font-size: 1.35rem;
-			}
-
-			.preview-card p {
-				margin: 0 auto;
-				color: var(--muted);
-				max-width: 420px;
-				line-height: 1.6;
-			}
-
+			/* Footer */
 			footer {
-				padding: 40px 20px;
+				background: var(--bg-secondary);
+				border-top: 1px solid var(--border-color);
+				padding: 48px 24px;
 				text-align: center;
-				color: var(--muted);
+				color: var(--text-muted);
 				font-size: 0.95rem;
 			}
 
 			footer a {
-				color: var(--primary);
+				color: var(--text-primary);
 				text-decoration: none;
 				font-weight: 600;
 			}
 
-			@media (max-width: 768px) {
-				header {
-					padding-top: 48px;
-				}
-
-				.section {
-					padding: 32px;
-				}
-
-				.step {
-					grid-template-columns: auto;
-					text-align: left;
-				}
-
-				.tutorial-card {
-					padding: 24px;
-				}
+			footer a:hover {
+				text-decoration: underline;
 			}
+
+			.footer-credits {
+				margin-bottom: 12px;
+				font-weight: 500;
+			}
+
+			.footer-disclaimer {
+				max-width: 600px;
+				margin: 12px auto 0;
+				font-size: 0.8rem;
+				color: var(--text-muted);
+				line-height: 1.5;
+			}
+
+			/* Extra animations */
+			@keyframes spin {
+				100% { transform: rotate(360deg); }
+			}
+			.spin-animated {
+				animation: spin 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+			}
+
+			/* Color picker list dot */
+			.preset-dot[style*="#f6f1e6"] { border: 1px solid var(--border-color); }
 		</style>
 	</head>
 	<body>
+		<!-- Header Navbar -->
+		<nav class="navbar">
+			<a href="#" class="navbar-brand">
+				<img src="assets/images/newlogocool.png" alt="YRC Canteen Logo" />
+				<span>YRC Canteen Widget</span>
+			</a>
+			<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark Mode" title="สลับโหมดมืด/สว่าง">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" id="theme-icon">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+				</svg>
+			</button>
+		</nav>
+
+		<!-- Hero area -->
 		<header>
 			<h1>วิดเจ็ตโรงอาหาร YRC</h1>
 			<p>
-				ตรวจสอบยอดคงเหลือและชื่อเจ้าของบัญชีโรงอาหาร YRC ได้ทันทีจากหน้าจอหลัก วิดเจ็ตที่พัฒนาด้วย
-				Expo และ React Native ตัวนี้ล็อกอินอย่างปลอดภัย อัปเดตข้อมูลสดใหม่ และพร้อมใช้งานกับธีมของคุณ
-				เสมอ
+				ตรวจสอบยอดเงินคงเหลือและชื่อเจ้าของบัญชีโรงอาหารโรงเรียนยุพราชวิทยาลัยได้ทันทีจากหน้าจอหลัก Android พัฒนาด้วย Expo & React Native ล็อกอินปลอดภัย อัปเดตสดใหม่ พร้อมปรับแต่งความสวยงามได้ตามสไตล์คุณ
 			</p>
-			<div class="cta-buttons">
-				<a
-					class="cta-primary"
-					href="download_file/YRC_Canteen_installer_V_ii.apk"
-					download
-				>ดาวน์โหลดไฟล์ติดตั้ง Android</a>
-				<a class="cta-secondary" href="https://www.instagram.com/trophoston/" target="_blank" rel="noreferrer">
-					พูดคุยกับผู้พัฒนา
-				</a>
+
+			<!-- Primary Download Box with older version selection -->
+			<div class="download-box">
+				<span class="download-badge">เวอร์ชันใหม่ล่าสุด V4</span>
+				<h2 class="download-title">ดาวน์โหลดวิดเจ็ต</h2>
+				<div class="download-meta">
+					<span>ไฟล์ APK สำหรับ Android</span>
+					<span>•</span>
+					<span>ขนาด ~79.3 MB</span>
+				</div>
+				<div class="cta-group">
+					<a
+						class="btn btn-primary"
+						href="download_file/current_version/YRC_Canteen_installer_V_iv.apk"
+						download
+						id="dl-primary-link"
+					>
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+						ดาวน์โหลดติดตั้ง Android (V4)
+					</a>
+					<a class="btn btn-secondary" href="https://www.instagram.com/trophoston/" target="_blank" rel="noreferrer">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+						พูดคุยกับผู้พัฒนา
+					</a>
+				</div>
+
+				<!-- Older Version Selector Dropdown -->
+				<div class="versions-dropdown">
+					<button class="versions-toggle" id="versions-toggle-btn">
+						<span>ดูรุ่นก่อนหน้า / เวอร์ชันอื่น</span>
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+					</button>
+					<div class="versions-list" id="versions-list-container">
+						<div class="version-item">
+							<div class="version-info">
+								<span class="version-tag">เวอร์ชัน 4 (V_iv) <small style="color:var(--accent-green);font-weight:bold;">[ปัจจุบัน]</small></span>
+								<span class="version-desc">เวอร์ชันล่าสุด — บิลด์ใหม่จาก EAS</span>
+							</div>
+							<a href="download_file/current_version/YRC_Canteen_installer_V_iv.apk" class="version-dl-link" download>
+								ดาวน์โหลด
+							</a>
+						</div>
+						<div class="version-item">
+							<div class="version-info">
+								<span class="version-tag">เวอร์ชัน 3 (V_iii) <small style="color:var(--text-muted);">[รุ่นก่อนหน้า]</small></span>
+								<span class="version-desc">ปรับปรุงการแต่งสีวิดเจ็ต, เพิ่มสัตว์เลี้ยงตอบสนองยอดเงิน, เลือกขนาดพรีวิวก่อนเปิดใช้งาน</span>
+							</div>
+							<a href="download_file/YRC_Canteen_installer_V_iii.apk" class="version-dl-link" download>
+								ดาวน์โหลด
+							</a>
+						</div>
+						<div class="version-item">
+							<div class="version-info">
+								<span class="version-tag">เวอร์ชัน 2 (V_ii) <small style="color:var(--text-muted);">[รุ่นก่อนหน้า]</small></span>
+								<span class="version-desc">เวอร์ชันดั้งเดิม เสถียร ตรวจสอบยอดเงิน และแสดงบันทึกการทำงาน</span>
+							</div>
+							<a href="download_file/YRC_Canteen_installer_V_ii.apk" class="version-dl-link" download>
+								ดาวน์โหลด
+							</a>
+						</div>
+					</div>
+				</div>
 			</div>
 		</header>
 
 		<main>
+			<!-- Highlights / Simulator Section -->
 			<section class="section">
-				<h2>เหตุผลที่นักเรียนเลือกใช้</h2>
+				<h2>ฟีเจอร์พรีเมียมใหม่ใน V4</h2>
+				<p class="section-subtitle">ลองปรับแต่งค่าจำลองวิดเจ็ตของคุณทางซ้าย เพื่อดูผลลัพธ์การทำงานจริงทางขวาได้เลย!</p>
+				
+				<div class="simulator-container">
+					<!-- Left Side: Controls -->
+					<div class="sim-controls">
+						<!-- Control: Widget Size -->
+						<div class="control-group">
+							<span class="control-label">ขนาดวิดเจ็ต (Widget Size)</span>
+							<div class="size-selector">
+								<button class="size-btn" data-size="2x1">2 × 1 (เล็กสุด)</button>
+								<button class="size-btn" data-size="4x1">4 × 1 (แถบบาง)</button>
+								<button class="size-btn active" data-size="4x2">4 × 2 (มาตรฐาน)</button>
+								<button class="size-btn" data-size="4x3">4 × 3 (ใหญ่พิเศษ)</button>
+								<button class="size-btn" data-size="2x2">2 × 2 (จัตุรัส)</button>
+							</div>
+						</div>
+
+						<!-- Control: Preset Theme -->
+						<div class="control-group">
+							<span class="control-label">ธีมหลัก (Base Theme)</span>
+							<div class="size-selector" id="theme-preset-selector">
+								<button class="size-btn active" data-preset="light">Light Mode</button>
+								<button class="size-btn" data-preset="dark">Dark Mode</button>
+								<button class="size-btn" data-preset="custom">Custom Color</button>
+							</div>
+						</div>
+
+						<!-- Control: Custom Colors (only shows/active on custom theme) -->
+						<div class="control-group" id="custom-color-control" style="opacity: 0.5; pointer-events: none;">
+							<span class="control-label">ระบุโทนสีของคุณเอง</span>
+							<div class="color-row">
+								<div class="color-input-container">
+									<input type="color" id="bg-color-picker" class="color-circle" value="#f6f1e6" />
+									<label for="bg-color-picker">สีพื้นหลัง</label>
+								</div>
+								<div class="color-input-container">
+									<input type="color" id="text-color-picker" class="color-circle" value="#1f1d18" />
+									<label for="text-color-picker">สีข้อความ</label>
+								</div>
+							</div>
+							<div class="preset-row">
+								<span style="font-size:0.75rem; font-weight: 600; color: var(--text-muted); align-self: center; margin-right: 4px;">แนะนำ:</span>
+								<div class="preset-dot" style="background: #f6f1e6;" data-bg="#f6f1e6" data-text="#1f1d18"></div>
+								<div class="preset-dot" style="background: #1d1b18;" data-bg="#1d1b18" data-text="#f7f3e8"></div>
+								<div class="preset-dot" style="background: #ffe66d;" data-bg="#ffe66d" data-text="#2a2622"></div>
+								<div class="preset-dot" style="background: #4ecdc4;" data-bg="#4ecdc4" data-text="#111111"></div>
+								<div class="preset-dot" style="background: #ff6b6b;" data-bg="#ff6b6b" data-text="#ffffff"></div>
+								<div class="preset-dot" style="background: #6c5ce7;" data-bg="#6c5ce7" data-text="#ffffff"></div>
+							</div>
+						</div>
+
+						<!-- Control: Toggles -->
+						<div class="control-group">
+							<span class="control-label">ตั้งค่าการแสดงผล</span>
+							<div class="toggles-grid">
+								<div class="toggle-item">
+									<span>เพื่อนตัวน้อย (Pet)</span>
+									<label class="switch">
+										<input type="checkbox" id="toggle-pet" checked>
+										<span class="slider"></span>
+									</label>
+								</div>
+								<div class="toggle-item">
+									<span>ข้อมูลเสริม (Extras)</span>
+									<label class="switch">
+										<input type="checkbox" id="toggle-extras" checked>
+										<span class="slider"></span>
+									</label>
+								</div>
+								<div class="toggle-item" style="grid-column: span 2;">
+									<span>มีประวัติการใช้จ่ายวันนี้ (Spent Today)</span>
+									<label class="switch">
+										<input type="checkbox" id="toggle-spent">
+										<span class="slider"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<!-- Control: Balance slider -->
+						<div class="control-group">
+							<span class="control-label">จำลองยอดเงินคงเหลือ</span>
+							<div class="range-slider-container">
+								<div class="range-header">
+									<span>ยอดเงินในบัญชี</span>
+									<span id="balance-val-label">฿120.00</span>
+								</div>
+								<input type="range" min="0" max="600" value="120" class="range-input" id="balance-slider" />
+							</div>
+						</div>
+					</div>
+
+					<!-- Right Side: Device Mockup -->
+					<div class="sim-mockup">
+						<div class="device-screen w-size-4x2" id="phone-screen">
+							<div class="device-wallpaper-decor"></div>
+							
+							<!-- App Icon Slot 1 -->
+							<div class="launcher-icon">
+								<div class="icon-shape" style="background: #06c755;">L</div>
+								<div class="icon-label">LINE</div>
+							</div>
+							
+							<!-- App Icon Slot 2 -->
+							<div class="launcher-icon">
+								<div class="icon-shape" style="background: #1877f2;">f</div>
+								<div class="icon-label">Facebook</div>
+							</div>
+
+							<!-- App Icon Slot 3 -->
+							<div class="launcher-icon slot-center">
+								<div class="icon-shape" style="background: #ff5722;">C</div>
+								<div class="icon-label">Camera</div>
+							</div>
+
+							<!-- App Icon Slot 4 -->
+							<div class="launcher-icon">
+								<div class="icon-shape" style="background: linear-gradient(135deg, #e52d27, #b31217);">Y</div>
+								<div class="icon-label">YouTube</div>
+							</div>
+
+							<!-- Simulated Widget Structure -->
+							<div class="simulated-widget-container" id="sim-widget-wrap">
+								<div class="widget-view" id="widget-view-el">
+									<!-- Header Row -->
+									<div class="w-header">
+										<div class="w-brand" id="w-brand-block">
+											<div class="w-dot" id="w-status-dot"></div>
+											<span>YRC CANTEEN</span>
+										</div>
+										<div class="w-header-actions">
+											<!-- Pet Companion SVG Slot -->
+											<div class="w-pet-wrapper pet-target-header" id="w-pet-header-container"></div>
+											<div class="w-refresh" id="w-refresh-btn" title="แตะเพื่อรีเฟรช">
+												<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6.02"/><path d="M20.9 4.3v4.6h-4.6"/></svg>
+											</div>
+										</div>
+									</div>
+
+									<!-- Body Row for 2x1 structure -->
+									<div class="w-body-row" id="w-body-row-container">
+										<!-- Balance / Main area -->
+										<div class="w-hero">
+											<h3 class="w-balance" id="w-balance-text">฿120.00</h3>
+										</div>
+									</div>
+
+									<!-- Stats Strip (Only visible in 4x3 Roomy) -->
+									<div class="w-stats-strip" id="w-stats-strip-container">
+										<div class="w-stat-col">
+											<span class="w-stat-label">ใช้วันนี้</span>
+											<span class="w-stat-val" id="w-stat-spent">฿45.00</span>
+										</div>
+										<div class="w-stat-col">
+											<span class="w-stat-label">ล่าสุด</span>
+											<span class="w-stat-val" id="w-stat-last">฿25.00 · 12:15</span>
+										</div>
+									</div>
+
+									<div class="w-divider" id="w-divider-line"></div>
+
+									<!-- Footer Row -->
+									<div class="w-footer">
+										<span class="w-owner" id="w-owner-text">นายสมชาย รักดี</span>
+										<span class="w-meta" id="w-meta-text">อัปเดต 12:30</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Icon Slot Row 3 Col 1 -->
+							<div class="launcher-icon slot-row2 slot-center">
+								<div class="icon-shape" style="background: #4caf50;">☎</div>
+								<div class="icon-label">Phone</div>
+							</div>
+							
+							<!-- Icon Slot Row 3 Col 2 -->
+							<div class="launcher-icon slot-row2">
+								<div class="icon-shape" style="background: #00bcd4;">💬</div>
+								<div class="icon-label">Message</div>
+							</div>
+
+							<!-- Icon Slot Row 3 Col 3 -->
+							<div class="launcher-icon slot-row2 slot-center-row3">
+								<div class="icon-shape" style="background: #ff9800;">✉</div>
+								<div class="icon-label">Gmail</div>
+							</div>
+
+							<!-- Icon Slot Row 3 Col 4 -->
+							<div class="launcher-icon slot-row2">
+								<div class="icon-shape" style="background: #3f51b5;">🌍</div>
+								<div class="icon-label">Browser</div>
+							</div>
+
+							<!-- Icon Slot Row 4 Col 1 -->
+							<div class="launcher-icon slot-row3 slot-center">
+								<div class="icon-shape" style="background: #e91e63;">🎵</div>
+								<div class="icon-label">Music</div>
+							</div>
+							
+							<!-- Icon Slot Row 4 Col 2 -->
+							<div class="launcher-icon slot-row3">
+								<div class="icon-shape" style="background: #607d8b;">⚙</div>
+								<div class="icon-label">Settings</div>
+							</div>
+
+							<!-- Icon Slot Row 4 Col 3 -->
+							<div class="launcher-icon slot-row3 slot-center-row3">
+								<div class="icon-shape" style="background: #9c27b0;">🎨</div>
+								<div class="icon-label">Themes</div>
+							</div>
+
+							<!-- Icon Slot Row 4 Col 4 -->
+							<div class="launcher-icon slot-row3">
+								<div class="icon-shape" style="background: #795548;">📂</div>
+								<div class="icon-label">Files</div>
+							</div>
+
+							<!-- Icon Slot Row 5 Col 1 -->
+							<div class="launcher-icon slot-row4 slot-center">
+								<div class="icon-shape" style="background: #e65100;">🍊</div>
+								<div class="icon-label">Canteen App</div>
+							</div>
+							
+							<!-- Icon Slot Row 5 Col 2 -->
+							<div class="launcher-icon slot-row4">
+								<div class="icon-shape" style="background: #111;">🎮</div>
+								<div class="icon-label">Play Store</div>
+							</div>
+
+							<!-- Icon Slot Row 5 Col 3 -->
+							<div class="launcher-icon slot-row4 slot-center-row3">
+								<div class="icon-shape" style="background: #8e24aa;">💜</div>
+								<div class="icon-label">Instagram</div>
+							</div>
+
+							<!-- Icon Slot Row 5 Col 4 -->
+							<div class="launcher-icon slot-row4">
+								<div class="icon-shape" style="background: #0288d1;">🔵</div>
+								<div class="icon-label">Maps</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Features detail section -->
+			<section class="section">
+				<h2>เหตุผลดีๆ ที่ควรใช้วิดเจ็ตนี้</h2>
+				<p class="section-subtitle">สะดวก ปลอดภัย และปรับแต่งง่ายเพื่อความสวยงามบนหน้าจอของคุณ</p>
 				<div class="feature-grid">
 					<article class="feature-card">
+						<div class="feature-icon-wrapper">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+						</div>
 						<h3>ยอดคงเหลืออัปเดตเสมอ</h3>
-						<p>แตะรีเฟรชเพียงครั้งเดียวเพื่อดึงยอดล่าสุด รองรับบัญชีนักเรียนเต็มรูปแบบและบันทึกสถานะให้ดูย้อนหลังได้</p>
+						<p>แตะรีเฟรชได้ทันทีจากหน้าจอเพื่อตรวจสอบยอดก่อนไปต่อแถวซื้ออาหาร ดึงข้อมูลตรงจากเว็บโรงอาหาร ยืนยันยอดคงเหลือแบบสดใหม่</p>
+					</article>
+					<!-- <article class="feature-card">
+						<div class="feature-icon-wrapper">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+						</div>
+						<h3>ปลอดภัยระดับอุปกรณ์</h3>
+						<p>เก็บข้อมูลล็อกอินของผู้ใช้ด้วย SecureStore เข้ารหัสแบบฮาร์ดแวร์ในเครื่อง และส่งตรงไปยังระบบโรงอาหารโดยไม่ผ่านเซิร์ฟเวอร์คนกลางใดๆ</p>
+					</article> -->
+					<article class="feature-card">
+						<div class="feature-icon-wrapper">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+						</div>
+						<h3>ปรับแต่งสีสันได้ดั่งใจ</h3>
+						<p>สลับระหว่างโหมดมืด (Dark Mode) และสว่าง (Light Mode) หรือกำหนดสีพื้นหลังและสีตัวอักษรเฉพาะตัวเพื่อให้เข้ากับชุดไอคอนและวอลเปเปอร์ของคุณ</p>
 					</article>
 					<article class="feature-card">
-						<h3>ปลอดภัยไว้ก่อน</h3>
-						<p>ข้อมูลล็อกอินถูกเก็บอย่างเข้ารหัสภายในอุปกรณ์ และจะถูกลบออกทันทีเมื่อคุณออกจากระบบ</p>
-					</article>
-					<article class="feature-card">
-						<h3>ธีมเข้ากับหน้าจอ</h3>
-						<p>เลือกได้ทั้งโหมดสว่างและมืด เพื่อให้วิดเจ็ตเข้ากับสไตล์หน้าจอของคุณตลอดทั้งวัน</p>
-					</article>
-					<article class="feature-card">
-						<h3>มีบันทึกการทำงาน</h3>
-						<p>ดูประวัติการล็อกอิน รีเฟรช และสถานะการทำงานทั้งหมดได้จากหน้าต่างบันทึกในแอป</p>
+						<div class="feature-icon-wrapper">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+						</div>
+						<h3>เพื่อนตัวน้อยบนวิดเจ็ต</h3>
+						<p>ทักทายกับสัตว์เลี้ยงมาสคอตน่ารัก "เพื่อนตัวน้อย" (Pet Mascot) ที่พร้อมจะเปลี่ยนอารมณ์และรูปร่างตามจำนวนเงินคงเหลือในบัตรของคุณ!</p>
 					</article>
 				</div>
 			</section>
 
+			<!-- Setup Steps -->
 			<section class="section">
-				<h2>เริ่มใช้งานในไม่กี่ขั้นตอน</h2>
+				<h2>เริ่มใช้งานใน 4 ขั้นตอนง่ายๆ</h2>
+				<p class="section-subtitle">เรียนรู้วิธีตั้งค่าใช้งานแอปพลิเคชันและวิดเจ็ตบนโทรศัพท์ระบบ Android ของคุณ</p>
 				<div class="steps">
-					<div class="step">
-						<h3>ติดตั้งไฟล์ APK</h3>
-						<p>ดาวน์โหลดไฟล์ YRC_Canteen_installer_V_ii.apk แล้วติดตั้งบนอุปกรณ์หรือเครื่องจำลองของคุณ</p>
+					<div class="step-card">
+						<span class="step-num">1</span>
+						<h3>ดาวน์โหลดติดตั้ง</h3>
+						<p>ดาวน์โหลดไฟล์ติดตั้งเวอร์ชันล่าสุด (V3 APK) จากปุ่มด้านบน แล้วเปิดเพื่อติดตั้งลงในเครื่อง (เปิดสิทธิ์ติดตั้งแอปภายนอกหากระบบถาม)</p>
 					</div>
-					<div class="step">
-						<h3>กรอกข้อมูลนักเรียน</h3>
-						<p>เปิดหน้าจอตั้งค่าในแอป เพิ่มชื่อผู้ใช้และรหัสผ่าน จากนั้นกดบันทึกเพื่อซิงก์วิดเจ็ต</p>
+					<div class="step-card">
+						<span class="step-num">2</span>
+						<h3>ล็อกอินเข้าสู่ระบบ</h3>
+						<p>เปิดแอปพลิเคชัน กรอกข้อมูลบัญชีเลขประจำตัวนักเรียนโรงอาหาร YRC และรหัสผ่าน กดบันทึกข้อมูลเพื่อเชื่อมโยงความปลอดภัย</p>
 					</div>
-					<div class="step">
-						<h3>ปักหมุดวิดเจ็ต</h3>
-						<p>กดค้างที่หน้าจอหลัก เลือก “YRC Canteen Widget” แล้ววางไว้ในตำแหน่งที่ต้องการ</p>
+					<div class="step-card">
+						<span class="step-num">3</span>
+						<h3>เพิ่มวิดเจ็ตลงหน้าจอ</h3>
+						<p>ไปที่หน้าจอหลัก กดค้างที่พื้นที่ว่าง เลือกคำสั่ง "วิดเจ็ต" (Widgets) ค้นหา "YRC Canteen" และเลือกขนาดที่ชอบไปจัดวางตามต้องการ</p>
 					</div>
-					<div class="step">
-						<h3>รีเฟรชได้ทุกเมื่อ</h3>
-						<p>กดปุ่มรีเฟรชบนวิดเจ็ตหรือในแอป เพื่ออัปเดตยอดก่อนมื้อเที่ยงได้ตลอดเวลา</p>
+					<div class="step-card">
+						<span class="step-num">4</span>
+						<h3>จัดแต่งสีสันและสนุก</h3>
+						<p>เข้าไปตั้งค่าสี ธีม สัตว์เลี้ยง และการดึงข้อมูลเพิ่มในตัวแอป แล้ววิดเจ็ตบนหน้าจอหลักของคุณจะอัปเดตสไตล์ตามการปรับแต่งทันที</p>
 					</div>
 				</div>
 			</section>
 
+			<!-- Quick Guide / Troubleshooting -->
 			<section class="section">
-				<h2>คู่มือการใช้งานฉบับย่อ</h2>
-				<div class="tutorial-grid">
-					<article class="tutorial-card">
-						<h3>1. ติดตั้งไฟล์ให้เสร็จสมบูรณ์</h3>
+				<h2>คู่มือและการแก้ไขปัญหา</h2>
+				<div class="guide-grid">
+					<div class="guide-card">
+						<h3>
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 16v-4M12 8h.01"/></svg>
+							ข้อควรรู้เบื้องต้น
+						</h3>
 						<ol>
-							<li>แตะปุ่ม “ดาวน์โหลดไฟล์ติดตั้ง Android” เพื่อรับไฟล์ APK เวอร์ชันล่าสุด</li>
-							<li>อนุญาตการติดตั้งจากแหล่งที่ไม่รู้จัก หากระบบแจ้งเตือน</li>
-							<li>เปิดไฟล์ YRC_Canteen_installer_V_ii.apk แล้วทำตามขั้นตอนบนหน้าจอ</li>
+							<li>สามารถแตะรีเฟรชที่สัญลักษณ์ลูกศรหมุนบนวิดเจ็ตได้โดยตรง โดยไม่ต้องเปิดเข้าหน้าแอป</li>
+							<li>ขนาด 4×3 และ 4×2 แนะนำสำหรับผู้ใช้ที่ต้องการความสวยงามเด่นชัด พร้อมดูรายละเอียดชื่อผู้ใช้</li>
+							<li>ระบบใช้อินเทอร์เน็ตในการดึงยอด หากออฟไลน์วิดเจ็ตจะแสดงสถานะออฟไลน์และยังโชว์ยอดล่าสุดที่เคยจำไว้</li>
 						</ol>
-					</article>
-					<article class="tutorial-card">
-						<h3>2. ตั้งค่าบัญชีในแอป</h3>
+					</div>
+					<div class="guide-card">
+						<h3>
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+							คำถามพบบ่อย / แก้ไขปัญหา
+						</h3>
 						<ol>
-							<li>เปิดแอปและกรอกชื่อผู้ใช้กับรหัสผ่านของบัญชีโรงอาหาร</li>
-							<li>ตรวจสอบให้แน่ใจว่าพิมพ์ถูกต้อง แล้วกด “บันทึกข้อมูล”</li>
-							<li>รอให้สถานะเปลี่ยนเป็นสำเร็จ วิดเจ็ตจะดึงข้อมูลล่าสุดให้อัตโนมัติ</li>
+							<li><strong>เข้าสู่ระบบไม่ผ่าน?</strong> กรุณาตรวจสอบรหัสผ่านอีกครั้งว่าตรงกับการล็อกอินบนหน้าเว็บของโรงเรียนหรือไม่</li>
+							<li><strong>วิดเจ็ตไม่อัปเดต?</strong> แนะนำให้ปิดการตั้งค่า Battery Optimization (จำกัดประหยัดพลังงาน) สำหรับแอปนี้ เพื่อให้แอปอัปเดตในพื้นหลังได้สมบูรณ์</li>
+							<li><strong>พบปัญหาร้ายแรง?</strong> สามารถเปิดดู "บันทึกการทำงาน" (Debug logs) ในแอปเพื่อก๊อปปี้ส่งข้อมูลมาให้ทางผู้พัฒนาช่วยวิเคราะห์ปัญหาต่อได้</li>
 						</ol>
-					</article>
-					<article class="tutorial-card">
-						<h3>3. ตั้งค่าวิดเจ็ตบนหน้าจอ</h3>
-						<ol>
-							<li>เพิ่มวิดเจ็ต “YRC Canteen” บนหน้าจอหลัก แล้วเลือกขนาด 4x2</li>
-							<li>วางให้เต็มคอลัมน์ หากตัวเลขยาววิดเจ็ตจะปรับขนาดอัตโนมัติ</li>
-							<li>แตะไอคอนรีเฟรชเพื่อเช็กยอดทันที และเปิดล็อกเพื่อดูประวัติ</li>
-						</ol>
-					</article>
+					</div>
 				</div>
 				<div class="tutorial-note">
-					เคล็ดลับ: หากเปลี่ยนรหัสผ่านหรือโทรศัพท์ รีเฟรชจากในแอปหนึ่งครั้งเพื่อซิงก์ข้อมูลใหม่ และอย่าลืมออกจากระบบเมื่อใช้งานเสร็จเพื่อความปลอดภัย
-				</div>
-			</section>
-
-			<section class="section preview">
-				<div class="preview-card">
-					<h3>หน้าตาวิดเจ็ตจริง</h3>
-					<p>
-						การ์ดกะทัดรัดที่โชว์ชื่อเจ้าของบัญชี ยอดคงเหลือ และเวลาที่อัปเดตล่าสุด ช่วยให้คุณควบคุมค่าใช้จ่ายก่อนถึงโรงอาหารได้ง่ายกว่าเดิม
-					</p>
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;color:var(--accent-orange);"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+					<span><strong>คำแนะนำพิเศษในการเปลี่ยนบัญชี:</strong> หากคุณต้องการเปลี่ยนผู้ใช้งานโรงอาหารบนโทรศัพท์เครื่องเดิม ให้กดปุ่มออกจากระบบภายในแอป หรือล้างข้อมูลแอป (Clear App Data) จากการตั้งค่าระบบแอนดรอยด์ แล้วทำการล็อกอินด้วยรหัสใหม่เพื่อเริ่มซิงก์ใหม่อีกครั้ง</span>
 				</div>
 			</section>
 		</main>
 
+		<!-- Footer area -->
 		<footer>
-			พัฒนาโดย <a href="https://www.instagram.com/trophoston/" target="_blank" rel="noreferrer">@trophoston</a>
-			• ขับเคลื่อนด้วย Expo และ React Native
+			<div class="footer-credits">
+				พัฒนาโดย <a href="https://www.instagram.com/trophoston/" target="_blank" rel="noreferrer">@trophoston</a>
+				• ขับเคลื่อนโครงสร้างแอปด้วย Expo และ React Native
+			</div>
+			<div>
+				สงวนลิขสิทธิ์ &copy; 2026. พัฒนาขึ้นเพื่อความสะดวกของชาว ย.พ. เท่านั้น
+			</div>
+			<div class="footer-disclaimer">
+				หมายเหตุสำคัญ: บริการนี้เป็นระบบทดลองและดึงข้อมูลสาธารณะของโรงเรียน หากระบบเว็บไซต์ canteen.yupparaj.ac.th มีการปรับเปลี่ยนโครงสร้างหรือระบบความปลอดภัย อาจส่งผลกระทบต่อความเสถียรหรือฟังก์ชันการดึงข้อมูลของแอปพลิเคชัน
+			</div>
 		</footer>
+
+		<!-- Script logic for Simulator, Theme Toggles and Version Dropdown -->
+		<script>
+			// --- 1. Version Dropdown Toggle ---
+			const versionsToggleBtn = document.getElementById('versions-toggle-btn');
+			const versionsListContainer = document.getElementById('versions-list-container');
+
+			versionsToggleBtn.addEventListener('click', () => {
+				versionsToggleBtn.classList.toggle('active');
+				versionsListContainer.classList.toggle('open');
+			});
+
+			// --- 2. Dark/Light Theme Switcher for Landing Page ---
+			const themeToggleBtn = document.getElementById('theme-toggle');
+			const themeIcon = document.getElementById('theme-icon');
+
+			// Check local storage or browser preference
+			const isUserPrefDark = localStorage.getItem('theme-dark') === 'true' || 
+				(!localStorage.getItem('theme-dark') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+			if (isUserPrefDark) {
+				document.body.classList.add('dark-mode');
+				updateThemeIcon(true);
+			}
+
+			themeToggleBtn.addEventListener('click', () => {
+				const isDarkNow = document.body.classList.toggle('dark-mode');
+				localStorage.setItem('theme-dark', isDarkNow ? 'true' : 'false');
+				updateThemeIcon(isDarkNow);
+			});
+
+			function updateThemeIcon(isDark) {
+				if (isDark) {
+					// Sun icon
+					themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />`;
+				} else {
+					// Moon icon
+					themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />`;
+				}
+			}
+
+			// --- 3. Interactive Widget Simulator Logic ---
+			
+			// Color calculation helpers exactly as HelloWidget.tsx
+			function parseHex(hex) {
+				if (!hex) return null;
+				let h = hex.replace('#', '').trim();
+				if (h.length === 3) h = h.split('').map(c => c + c).join('');
+				if (h.length !== 6) return null;
+				const n = parseInt(h, 16);
+				if (isNaN(n)) return null;
+				return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+			}
+
+			function toHex(r, g, b) {
+				const c = v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+				return `#${c(r)}${c(g)}${c(b)}`;
+			}
+
+			function mix(a, b, t) {
+				const A = parseHex(a);
+				const B = parseHex(b);
+				if (!A || !B) return '#ffffff';
+				return toHex(A.r + (B.r - A.r) * t, A.g + (B.g - A.g) * t, A.b + (B.b - A.b) * t);
+			}
+
+			function luminance(hex) {
+				const c = parseHex(hex);
+				if (!c) return 1;
+				return (0.299 * c.r + 0.587 * c.g + 0.114 * c.b) / 255;
+			}
+
+			// Pet SVG Generator matching HelloWidget.tsx
+			function moneyTier(balance) {
+				if (balance == null) return 'sad';
+				if (balance >= 500) return 'full';
+				if (balance >= 200) return 'happy';
+				if (balance >= 50) return 'content';
+				if (balance >= 1) return 'hungry';
+				return 'sad';
+			}
+
+			function getPetSvg(tier, special = false) {
+				const body = {
+					full: '#51cf86',
+					happy: '#74d99a',
+					content: '#f2c14e',
+					hungry: '#f0a35e',
+					sad: '#e8836b',
+				};
+				const ink = '#2a2622';
+				const fill = body[tier];
+				const cheery = special || tier === 'full' || tier === 'happy';
+
+				const happyEyes = `<path d="M33 47 Q39 40 45 47" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M55 47 Q61 40 67 47" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+				const dotEyes = `<circle cx="39" cy="46" r="3.4" fill="${ink}"/><circle cx="61" cy="46" r="3.4" fill="${ink}"/>`;
+				const eyes = special || tier === 'full' || tier === 'happy' ? happyEyes : dotEyes;
+
+				const mouths = {
+					full: 'M36 60 Q50 75 64 60',
+					happy: 'M39 61 Q50 71 61 61',
+					content: 'M42 63 Q50 67 58 63',
+					hungry: 'M42 67 Q50 62 58 67',
+					sad: 'M39 69 Q50 60 61 69',
+				};
+				const mouth = special
+					? `<ellipse cx="50" cy="64" rx="9" ry="7.5" fill="${ink}"/><path d="M44 66 Q50 71 56 66" stroke="#ff8fa3" stroke-width="3" fill="none" stroke-linecap="round"/>`
+					: `<path d="${mouths[tier]}" stroke="${ink}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+
+				const cheeks = cheery
+					? `<circle cx="31" cy="57" r="5" fill="#ffffff" fill-opacity="0.28"/><circle cx="69" cy="57" r="5" fill="#ffffff" fill-opacity="0.28"/>`
+					: '';
+				const sparkles = special
+					? `<path d="M16 26 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#ffd34d"/><path d="M84 36 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6z" fill="#ffd34d"/>`
+					: '';
+
+				return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;"><circle cx="33" cy="31" r="8" fill="${fill}"/><circle cx="67" cy="31" r="8" fill="${fill}"/><ellipse cx="50" cy="57" rx="32" ry="30" fill="${fill}"/>${cheeks}${sparkles}${eyes}${mouth}</svg>`;
+			}
+
+			// Simulator state variables
+			let simSize = '4x2';
+			let simPreset = 'light'; // light, dark, custom
+			let simBgColor = '#f6f1e6';
+			let simTextColor = '#1f1d18';
+			let simShowPet = true;
+			let simShowExtras = true;
+			let simSpentToday = false;
+			let simBalance = 120.00;
+
+			// DOM Elements
+			const phoneScreen = document.getElementById('phone-screen');
+			const widgetViewEl = document.getElementById('widget-view-el');
+			const wBalanceText = document.getElementById('w-balance-text');
+			const wPetHeaderContainer = document.getElementById('w-pet-header-container');
+			const wRefreshBtn = document.getElementById('w-refresh-btn');
+			const wStatsStripContainer = document.getElementById('w-stats-strip-container');
+			const wDividerLine = document.getElementById('w-divider-line');
+			const balanceValLabel = document.getElementById('balance-val-label');
+			const customColorControl = document.getElementById('custom-color-control');
+			
+			// Interactive inputs
+			const balanceSlider = document.getElementById('balance-slider');
+			const togglePet = document.getElementById('toggle-pet');
+			const toggleExtras = document.getElementById('toggle-extras');
+			const toggleSpent = document.getElementById('toggle-spent');
+			const bgColorPicker = document.getElementById('bg-color-picker');
+			const textColorPicker = document.getElementById('text-color-picker');
+
+			// 3.1 Size buttons configuration
+			document.querySelectorAll('.size-btn[data-size]').forEach(btn => {
+				btn.addEventListener('click', (e) => {
+					document.querySelectorAll('.size-btn[data-size]').forEach(b => b.classList.remove('active'));
+					btn.classList.add('active');
+					
+					// Update screen layout class
+					phoneScreen.classList.remove('w-size-2x1', 'w-size-4x1', 'w-size-4x2', 'w-size-4x3', 'w-size-2x2');
+					simSize = btn.dataset.size;
+					phoneScreen.classList.add('w-size-' + simSize);
+					
+					updateWidgetDOM();
+				});
+			});
+
+			// Rearrange pet container between header, body, and footer depending on size and options
+			function rearrangePetPlacement() {
+				// Remove existing pet wrappers
+				const existingPets = widgetViewEl.querySelectorAll('.w-pet-wrapper');
+				existingPets.forEach(el => el.remove());
+
+				if (!simShowPet) return null;
+
+				const petDiv = document.createElement('div');
+				petDiv.className = 'w-pet-wrapper';
+
+				if (simSize === '2x1') {
+					petDiv.id = 'w-pet-body-container';
+					const bodyRow = document.getElementById('w-body-row-container');
+					bodyRow.appendChild(petDiv);
+				} else if (simSize === '2x2') {
+					petDiv.id = 'w-pet-footer-container';
+					const footerEl = widgetViewEl.querySelector('.w-footer');
+					footerEl.appendChild(petDiv);
+				} else {
+					petDiv.id = 'w-pet-header-container';
+					const headerActions = widgetViewEl.querySelector('.w-header-actions');
+					headerActions.insertBefore(petDiv, document.getElementById('w-refresh-btn'));
+				}
+				return petDiv;
+			}
+
+			// Adjust balance font size to prevent overflow inside widget preview
+			function adjustBalanceFontSize() {
+				const el = document.getElementById('w-balance-text');
+				const container = el.parentElement; // .w-hero
+				
+				// Set default max font size for the current size layout
+				let maxFs = 48;
+				if (simSize === '2x1') maxFs = 26;
+				else if (simSize === '4x1') maxFs = 32;
+				else if (simSize === '4x2') maxFs = 50;
+				else if (simSize === '4x3') maxFs = 64;
+				else if (simSize === '2x2') maxFs = 36;
+				
+				el.style.fontSize = maxFs + 'px';
+				
+				// Check for scrollWidth overflow relative to the container width
+				let fs = maxFs;
+				const paddingOffset = 12;
+				const maxWidth = container.clientWidth - paddingOffset;
+				
+				while (el.scrollWidth > maxWidth && fs > 12) {
+					fs -= 1;
+					el.style.fontSize = fs + 'px';
+				}
+			}
+
+			// 3.2 Theme presets configuration
+			document.querySelectorAll('.size-btn[data-preset]').forEach(btn => {
+				btn.addEventListener('click', (e) => {
+					document.querySelectorAll('.size-btn[data-preset]').forEach(b => b.classList.remove('active'));
+					btn.classList.add('active');
+					
+					simPreset = btn.dataset.preset;
+					if (simPreset === 'custom') {
+						customColorControl.style.opacity = '1';
+						customColorControl.style.pointerEvents = 'auto';
+					} else {
+						customColorControl.style.opacity = '0.5';
+						customColorControl.style.pointerEvents = 'none';
+					}
+					
+					updateWidgetDOM();
+				});
+			});
+
+			// 3.3 Custom color inputs configuration
+			bgColorPicker.addEventListener('input', (e) => {
+				simBgColor = e.target.value;
+				updateWidgetDOM();
+			});
+
+			textColorPicker.addEventListener('input', (e) => {
+				simTextColor = e.target.value;
+				updateWidgetDOM();
+			});
+
+			// 3.4 Preset dot options configuration
+			document.querySelectorAll('.preset-dot').forEach(dot => {
+				dot.addEventListener('click', () => {
+					document.querySelectorAll('.preset-dot').forEach(d => d.classList.remove('active'));
+					dot.classList.add('active');
+					
+					// Trigger custom preset colors
+					bgColorPicker.value = dot.dataset.bg;
+					textColorPicker.value = dot.dataset.text;
+					simBgColor = dot.dataset.bg;
+					simTextColor = dot.dataset.text;
+					
+					// Change preset to custom if not already
+					const customBtn = document.querySelector('.size-btn[data-preset="custom"]');
+					document.querySelectorAll('.size-btn[data-preset]').forEach(b => b.classList.remove('active'));
+					customBtn.classList.add('active');
+					customColorControl.style.opacity = '1';
+					customColorControl.style.pointerEvents = 'auto';
+					simPreset = 'custom';
+					
+					updateWidgetDOM();
+				});
+			});
+
+			// 3.5 Checkbox toggles configuration
+			togglePet.addEventListener('change', (e) => {
+				simShowPet = e.target.checked;
+				updateWidgetDOM();
+			});
+
+			toggleExtras.addEventListener('change', (e) => {
+				simShowExtras = e.target.checked;
+				updateWidgetDOM();
+			});
+
+			toggleSpent.addEventListener('change', (e) => {
+				simSpentToday = e.target.checked;
+				updateWidgetDOM();
+			});
+
+			// 3.6 Balance Slider configuration
+			balanceSlider.addEventListener('input', (e) => {
+				simBalance = parseFloat(e.target.value);
+				balanceValLabel.innerText = `฿${simBalance.toFixed(2)}`;
+				updateWidgetDOM();
+			});
+
+			// 3.7 Refresh button animation simulator
+			wRefreshBtn.addEventListener('click', () => {
+				wRefreshBtn.classList.add('spin-animated');
+				setTimeout(() => {
+					wRefreshBtn.classList.remove('spin-animated');
+				}, 600);
+			});
+
+			// Update simulated widget DOM elements according to settings
+			function updateWidgetDOM() {
+				// Solve colors
+				let surface = simBgColor;
+				let ink = simTextColor;
+
+				const baseThemes = {
+					light: { surface: '#f6f1e6', ink: '#1f1d18' },
+					dark: { surface: '#1d1b18', ink: '#f7f3e8' }
+				};
+
+				if (simPreset === 'light') {
+					surface = baseThemes.light.surface;
+					ink = baseThemes.light.ink;
+				} else if (simPreset === 'dark') {
+					surface = baseThemes.dark.surface;
+					ink = baseThemes.dark.ink;
+				}
+
+				const inkSoft = mix(ink, surface, 0.32);
+				const inkMuted = mix(ink, surface, 0.52);
+				const hairline = mix(surface, ink, 0.14);
+				const chip = mix(surface, ink, 0.06);
+				const chipBorder = mix(surface, ink, 0.16);
+				
+				// Apply custom color variables dynamically to element
+				widgetViewEl.style.setProperty('--w-surface', surface);
+				widgetViewEl.style.setProperty('--w-ink', ink);
+				widgetViewEl.style.setProperty('--w-ink-soft', inkSoft);
+				widgetViewEl.style.setProperty('--w-ink-muted', inkMuted);
+				widgetViewEl.style.setProperty('--w-hairline', hairline);
+				widgetViewEl.style.setProperty('--w-chip', chip);
+				widgetViewEl.style.setProperty('--w-chip-border', chipBorder);
+
+				// Update Balance Text
+				wBalanceText.innerText = `฿${simBalance.toFixed(2)}`;
+
+				// Run pet placement and update SVGs
+				const activePetContainer = rearrangePetPlacement();
+				if (activePetContainer) {
+					const tier = moneyTier(simBalance);
+					const petSvgStr = getPetSvg(tier, simSpentToday);
+					activePetContainer.innerHTML = petSvgStr;
+				}
+
+				// Update Extras Display
+				if (simShowExtras) {
+					wStatsStripContainer.classList.add('has-extras');
+					wDividerLine.classList.add('has-extras');
+				} else {
+					wStatsStripContainer.classList.remove('has-extras');
+					wDividerLine.classList.remove('has-extras');
+				}
+
+				// Adjust font size dynamically to avoid wrapping/overflow
+				adjustBalanceFontSize();
+			}
+
+			// Run Initial layout updates
+			updateWidgetDOM();
+		</script>
 	</body>
 </html>
