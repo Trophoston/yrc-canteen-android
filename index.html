@@ -170,7 +170,7 @@
 
 			.download-badge {
 				position: absolute;
-				top: -12px;
+				top: -12px; white-space: nowrap;
 				left: 50%;
 				transform: translateX(-50%);
 				background: var(--accent-green);
@@ -367,7 +367,7 @@
 			.feature-grid {
 				display: grid;
 				gap: 24px;
-				grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+				grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
 			}
 
 			.feature-card {
@@ -626,8 +626,8 @@
 
 			/* Launcher Screen representation */
 			.device-screen {
-				width: 360px;
-				height: 560px;
+				width: min(360px, 100%);
+				aspect-ratio: 360 / 560;
 				background: radial-gradient(circle at top left, #6a11cb 0%, #2575fc 100%);
 				border-radius: 36px;
 				border: 12px solid #2a2a2a;
@@ -1071,7 +1071,7 @@
 			.steps {
 				display: grid;
 				gap: 20px;
-				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+				grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
 				margin-top: 32px;
 			}
 
@@ -1115,7 +1115,7 @@
 			/* Quick Guide Accordion */
 			.guide-grid {
 				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
 				gap: 24px;
 				margin-top: 32px;
 			}
@@ -1213,6 +1213,63 @@
 
 			/* Color picker list dot */
 			.preset-dot[style*="#f6f1e6"] { border: 1px solid var(--border-color); }
+
+			/* ===================== Responsive breakpoints ===================== */
+			@media (max-width: 900px) {
+				header { padding: 64px 20px 40px; }
+				main { padding: 28px 20px 64px; }
+				.section { padding: 36px 28px; margin-bottom: 48px; }
+			}
+
+			@media (max-width: 640px) {
+				.navbar { padding: 12px 16px; }
+				.navbar-brand { font-size: 1rem; gap: 8px; }
+				.navbar-brand img { width: 30px; height: 30px; }
+				.theme-toggle-btn { width: 38px; height: 38px; }
+
+				header { padding: 48px 16px 32px; }
+				header h1 { font-size: clamp(2rem, 8.5vw, 3.2rem); margin-bottom: 16px; }
+				header p { font-size: 1.05rem; margin-bottom: 28px; }
+
+				.download-box { padding: 24px 18px; }
+				.download-title { font-size: 1.25rem; }
+				.download-meta { flex-wrap: wrap; gap: 4px 10px; }
+
+				main { padding: 20px 16px 56px; }
+				.section { padding: 28px 20px; margin-bottom: 40px; border-radius: var(--radius-md); }
+				.section-subtitle { font-size: 0.98rem; margin-bottom: 24px; }
+
+				.feature-card, .guide-card { padding: 22px 20px; }
+				.step-card { padding: 28px 20px; }
+
+				.toggles-grid { grid-template-columns: 1fr; }
+
+				footer { padding: 40px 16px; }
+			}
+
+			@media (max-width: 420px) {
+				header h1 { font-size: clamp(1.8rem, 9vw, 2.6rem); }
+				header p { font-size: 1rem; }
+				.section { padding: 22px 16px; }
+				.btn { padding: 14px 18px; font-size: 0.95rem; }
+				.color-row { flex-direction: column; align-items: stretch; }
+				.size-btn { flex: 1 1 auto; text-align: center; }
+				.step-num { font-size: 2.4rem; top: 12px; right: 18px; }
+				.device-screen { padding: 16px 12px; gap: 8px; }
+				.device-screen .icon-shape { width: 38px; height: 38px; font-size: 1rem; }
+				/* let the simulator's grid tracks shrink instead of forcing overflow */
+				.sim-controls, .sim-mockup, .simulator-container > * { min-width: 0; }
+			}
+			@media (max-width: 340px) {
+				.navbar { padding: 10px 12px; }
+				.navbar-brand span { font-size: 0.9rem; }
+				main { padding: 16px 12px 48px; }
+				.section { padding: 18px 14px; }
+				.download-box { padding: 20px 14px; }
+				.download-meta { font-size: 0.8rem; }
+				.size-selector .size-btn { flex: 1 1 100%; }
+				.btn { font-size: 0.9rem; }
+			}
 		</style>
 	</head>
 	<body>
@@ -1671,7 +1728,8 @@
 		<footer>
 			<div class="footer-credits">
 				พัฒนาโดย <a href="https://www.instagram.com/trophoston/" target="_blank" rel="noreferrer">@trophoston</a>
-				• ขับเคลื่อนโครงสร้างแอปด้วย Expo และ React Native
+				• <a href="https://github.com/Trophoston/yrc-canteen-android" target="_blank" rel="noreferrer">ซอร์สโค้ดบน GitHub</a>
+					• ขับเคลื่อนโครงสร้างแอปด้วย Expo และ React Native
 			</div>
 			<div>
 				สงวนลิขสิทธิ์ &copy; 2026. พัฒนาขึ้นเพื่อความสะดวกของชาว ย.พ. เท่านั้น
