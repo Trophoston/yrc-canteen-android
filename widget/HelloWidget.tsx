@@ -329,6 +329,8 @@ export default function HelloWidget({ state, width = 320, height = 140 }: HelloW
     </FlexWidget>
   );
 
+  // Tapping the balance opens the app. (Click actions live on leaf elements, never on
+  // containers that also hold the refresh button — otherwise the refresh tap is stolen.)
   const balanceWidget = (availableWidth: number, maxByHeight: number, cap: number) => {
     const size = fitBalance(`${balanceText}`, availableWidth, maxByHeight, fs(cap));
     return (
@@ -344,6 +346,7 @@ export default function HelloWidget({ state, width = 320, height = 140 }: HelloW
           adjustsFontSizeToFit: true,
         }}
         maxLines={1}
+        clickAction={OPEN_APP_ACTION}
       />
     );
   };
@@ -353,7 +356,9 @@ export default function HelloWidget({ state, width = 320, height = 140 }: HelloW
   const petSpecial = !!state.extras?.spentToday;
   const showPet = (state.showPet ?? true) && !isError && !!state.balance;
 
-  const petGlyph = (size: number) => <SvgWidget svg={petSvg(petTier, petSpecial)} style={{ width: size, height: size }} />;
+  const petGlyph = (size: number) => (
+    <SvgWidget svg={petSvg(petTier, petSpecial)} style={{ width: size, height: size }} clickAction={OPEN_APP_ACTION} />
+  );
 
   // Brand label is flex + truncate so it can never push anything off the edge.
   const brandCluster = (brandSize: number, dotSize: number) => (
@@ -385,28 +390,22 @@ export default function HelloWidget({ state, width = 320, height = 140 }: HelloW
           height: 'match_parent',
           width: 'match_parent',
           backgroundColor: palette.surface,
+          overflow: 'hidden',
           borderRadius: 18,
           paddingHorizontal: pad,
           flexDirection: 'column',
           justifyContent: 'center',
           flexGap: 2,
         }}
-        clickAction={OPEN_APP_ACTION}
       >
         <FlexWidget
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: 'match_parent' }}
-          clickAction={OPEN_APP_ACTION}
         >
           {brandCluster(10, 7)}
           {refreshButton(refresh)}
         </FlexWidget>
-        <FlexWidget
-          style={{ flexDirection: 'row', alignItems: 'center', width: 'match_parent', flexGap: 8 }}
-          clickAction={OPEN_APP_ACTION}
-        >
-          <FlexWidget style={{ flex: 1 }} clickAction={OPEN_APP_ACTION}>
-            {balanceWidget(avail, balMax, 34)}
-          </FlexWidget>
+        <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', width: 'match_parent', flexGap: 8 }}>
+          <FlexWidget style={{ flex: 1 }}>{balanceWidget(avail, balMax, 34)}</FlexWidget>
           {showPet ? petGlyph(24) : null}
         </FlexWidget>
         {showInfo ? (
@@ -435,20 +434,19 @@ export default function HelloWidget({ state, width = 320, height = 140 }: HelloW
           height: 'match_parent',
           width: 'match_parent',
           backgroundColor: palette.surface,
+          overflow: 'hidden',
           borderRadius: 20,
           paddingHorizontal: pad,
           flexDirection: 'column',
           justifyContent: 'center',
           flexGap: 3,
         }}
-        clickAction={OPEN_APP_ACTION}
       >
         <FlexWidget
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: 'match_parent' }}
-          clickAction={OPEN_APP_ACTION}
         >
           {brandCluster(12, 8)}
-          <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 8 }} clickAction={OPEN_APP_ACTION}>
+          <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 8 }}>
             {showPet ? petGlyph(30) : null}
             {refreshButton(refresh)}
           </FlexWidget>
@@ -502,10 +500,9 @@ export default function HelloWidget({ state, width = 320, height = 140 }: HelloW
   const header = (
     <FlexWidget
       style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: 'match_parent' }}
-      clickAction={OPEN_APP_ACTION}
     >
       {brandCluster(brandSize, dotSize)}
-      <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 8 }} clickAction={OPEN_APP_ACTION}>
+      <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 8 }}>
         {petInHeader ? petGlyph(petHeaderSize) : null}
         {refreshButton(refresh)}
       </FlexWidget>
@@ -587,12 +584,12 @@ export default function HelloWidget({ state, width = 320, height = 140 }: HelloW
         height: 'match_parent',
         width: 'match_parent',
         backgroundColor: palette.surface,
+        overflow: 'hidden',
         borderRadius: radius,
         padding: pad,
         flexDirection: 'column',
         justifyContent: 'space-between',
       }}
-      clickAction={OPEN_APP_ACTION}
     >
       {header}
       {hero}

@@ -6,6 +6,7 @@ const CREDENTIALS_KEY = 'canteen.credentials';
 const PREFERENCES_KEY = 'canteen.preferences';
 const STATE_KEY = 'canteen.widget.state';
 const DEBUG_HTML_KEY = 'canteen.debug.dashboardHtml';
+const FETCH_SLOT_KEY = 'canteen.lastFetchSlot';
 
 const DEFAULT_PREFERENCES: WidgetPreferences = {
   theme: 'light',
@@ -121,6 +122,19 @@ export async function saveWidgetState(state: WidgetState): Promise<void> {
 
 export async function clearWidgetState(): Promise<void> {
   await AsyncStorage.removeItem(STATE_KEY);
+}
+
+/** Remembers which scheduled time-slot was last auto-fetched, so each slot fetches once. */
+export async function loadLastFetchSlot(): Promise<string | null> {
+  return AsyncStorage.getItem(FETCH_SLOT_KEY);
+}
+
+export async function saveLastFetchSlot(slot: string): Promise<void> {
+  try {
+    await AsyncStorage.setItem(FETCH_SLOT_KEY, slot);
+  } catch (error) {
+    console.warn('Failed to save fetch slot', error);
+  }
 }
 
 /** Stores the most recent raw dashboard HTML for debugging the extras scraper. */
